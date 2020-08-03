@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="it.geosolutions.swgeoserver.dao.UploadFileMapper">
+
+	<!-- 执行sql -->
+	<select id="executeBysql" parameterType="java.lang.String"
+			resultType="java.lang.String">
+		${sql}
+	</select>
+	<select id="executeReMap" parameterType="java.lang.String"
+			resultType="map">
+		${sql}
+	</select>
+
+	<!-- 保存数据 根据表名和传入的列和值，保存数据 暂时用于保存图形数据和图形属性数据 -->
+	<insert id="saveData" statementType="STATEMENT"
+			parameterType="it.geosolutions.swgeoserver.entry.TablesEntity">
+		INSERT INTO ${tableName}
+		<foreach collection="columnList" item="columnList"
+				 separator="," open="(" close=")">
+			${columnList}
+		</foreach>
+
+		values
+		<foreach collection="valueList" item="valueList" separator="," open="" close="" index="index">
+			<!--<choose>-->
+				<!--<when test="valueList.contains('''.toString())">-->
+					<!--<![CDATA['${valueList}']]>-->
+				<!--</when>-->
+				<!--<otherwise>-->
+					${valueList}
+				<!--</otherwise>-->
+			<!--</choose>-->
+		</foreach>
+	</insert>
+
+	<!-- 检查表是否存在 -->
+	<select id="checkTableName" resultType="int">
+		select count(*) from pg_class where relname = #{value}
+	</select>
+
+</mapper>
+

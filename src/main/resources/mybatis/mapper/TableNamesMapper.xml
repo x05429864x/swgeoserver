@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="it.geosolutions.swgeoserver.dao.TableNamesMapper">
+
+	<sql id="table">tablenames</sql>
+
+	<!-- 定义的resultMap，可以解决类的属性名和数据库列名不一致的问题-->
+	<resultMap id="tablenamesMap" type="it.geosolutions.swgeoserver.entry.TableNames">
+		<id property="id" column="id" jdbcType="BIGINT"/>
+		<result property="nameCn" column="name_cn" jdbcType="VARCHAR" />
+		<result property="nameEn" column="name_en" jdbcType="VARCHAR"  />
+		<result property="creater" column="creater" jdbcType="BIGINT"  />
+		<result property="createTime" column="create_time"  jdbcType="TIMESTAMP"/>
+		<result property="updater" column="updater" jdbcType="BIGINT"  />
+		<result property="updateTime" column="update_time"  jdbcType="TIMESTAMP"/>
+		<result property="state" column="state" jdbcType="BIGINT"  />
+		<result property="remark" column="remark" jdbcType="VARCHAR"  />
+	</resultMap>
+
+	<select id="getAll" parameterType="Long" resultType="TableNames">
+		select * from <include refid="table"/> where state = #{state} order by id
+	</select>
+
+	<select id="getByIds" resultType="TableNames" >
+		select * from <include refid="table"/> where id in
+		<foreach collection="array" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<!-- 根据Name查询表名-->
+	<select id="getByName" resultType="TableNames">
+		select * from <include refid="table"/>
+		<if test="_parameter != null">
+			<where>
+				name_cn like '%${nameCn}%' and name_en like '%${nameEn}%'
+			</where>
+		</if>
+		order by id
+	</select>
+
+	<!-- 根据英文查询中文名称-->
+	<select id="getNameCn" resultType="TableNames">
+		select * from <include refid="table"/>
+		<if test="_parameter != null">
+			<where>
+				name_en like '%${nameEn}%'
+			</where>
+		</if>
+		order by id
+	</select>
+
+	<!-- 查询数据库中已经导入的表名 -->
+	<select id="findTableName" resultType="java.lang.String">
+		SELECT tablename FROM pg_tables	WHERE tablename NOT LIKE 'pg%' AND tablename NOT LIKE 'sql_%' and tablename not like '%tablenames%' and schemaname = 'public'
+	</select>
+
+	<!-- 新增 -->
+	<insert id="insertTableNames" parameterType="TableNames"
+			keyColumn="id" keyProperty="id" useGeneratedKeys="true" >
+		insert into <include refid="table"/>(name_cn,name_en,creater,create_time,updater,update_time,state,remark)
+		values (#{nameCn},#{nameEn},#{creater},#{createTime},#{updater},#{updateTime},#{state},#{remark})
+	</insert>
+
+	<!-- 更新 -->
+	<update id="updateTableNames" parameterType="TableNames">
+		UPDATE <include refid="table"/>
+		<trim prefix="set" suffixOverrides=",">
+			<if test="nameCn!=null and nameCn !=''">name_cn=#{nameCn},</if>
+			<if test="nameEn!=null and nameEn !=''">name_en=#{nameEn},</if>
+			<if test="updater!=null and updater !=''">updater=#{updater},</if>
+			<if test="updateTime!=null">update_time=#{updateTime},</if>
+			<if test="state!=null and state !=''">state=#{state},</if>
+			<if test="remark!=null and remark !=''">remark=#{remark},</if>
+		</trim>
+		WHERE id = #{id}
+	</update>
+
+	<!-- 作废 -->
+	<update id="updateState" parameterType="Long[]">
+		<if test="_parameter != null">
+			UPDATE <include refid="table"/> SET state = 1 ,update_time = now() where id in
+			<foreach collection="array" item="id" index="index" open="(" separator="," close=")" >
+				#{id}
+			</foreach>
+		</if>
+	</update>
+
+	<!-- 删除对照表数据 -->
+	<delete id="deleteTableNames" parameterType="Long[]">
+		delete from <include refid="table"/> where id in
+		<foreach collection="array" item="id" index="index" open="(" separator="," close=")" >
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 删除数据库中表-->
+	<update id="dropTable" parameterType="String">
+		<if test="_parameter != null">
+			drop table ${names}
+		</if>
+	</update>
+
+</mapper>
+

@@ -1,0 +1,52 @@
+server:
+  servlet:
+    context-path: /swgeoserver
+  tomcat:
+    uri-encoding: utf-8
+  port: 8084
+---
+app:
+  evniroment: dev
+---
+mybatis:
+  config-location: classpath:mybatis/mybatis.cfg.xml        # mybatis配置文件所在路径
+  type-aliases-package: it.geosolutions.swgeoserver.entities    # 所有Entity别名类所在包
+  mapper-locations:
+  - classpath:mybatis/mapper/**/*.xml
+
+
+---
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+    driver-class-name: org.postgresql.Driver                # postgresql驱动包
+    url: jdbc:postgresql://192.168.8.254:5432/postgres?characterEncoding=utf8&useSSL=false&allowMultiQueries=true      # 数据库名称
+    username: postgres
+    password: postgres
+    dbcp2:
+      min-idle: 5                                           # 数据库连接池的最小维持连接数
+      initial-size: 5                                       # 初始化连接数
+      max-total: 5                                          # 最大连接数
+      max-wait-millis: 200                                  # 等待连接获取的最大超时时间
+      min-evictable-idle-time-millis: 60000
+      time-between-eviction-runs-millis: 300000
+      test-on-return: false
+      test-on-borrow: false                                 #借出连接时不要测试，否则很影响性能
+      test-while-idle: true                                 #指明连接是否被空闲连接回收器(如果有)进行检验.如果检测失败,则连接将被从池中去除.
+      validation-query: "SELECT 1"                          #验证连接是否可用，使用的SQL语句
+      max-open-prepared-statements: 20
+      log-abandoned: true
+  http:                                                     ##编码格式
+    encoding:
+      force: true
+      charset: utf-8
+      enabled: true
+  jpa:
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+  servlet:
+    multipart:
+      max-file-size: 4096MB
+      max-request-size: 4096MB

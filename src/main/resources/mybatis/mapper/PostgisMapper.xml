@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="it.geosolutions.swgeoserver.dao.PostgisMapper">
+
+    <!--<select id="findById" resultType="Dept" parameterType="Long">
+		select deptno,dname,db_source from dept where deptno=#{deptno};
+	</select>
+    <select id="findAll" resultType="Dept">
+		select deptno,dname,db_source from dept;
+	</select>
+    <insert id="addDept" parameterType="Dept">
+		INSERT INTO dept(dname,db_source) VALUES(#{dname},DATABASE());
+	</insert>-->
+
+    <select id="findId" resultType="java.util.HashMap" parameterType="String" statementType="STATEMENT">
+		SELECT MAX(gid) as maxId FROM ${_parameter}
+	</select>
+
+
+    <select id="findRoute" resultType="java.util.HashMap" parameterType="hashmap" statementType="CALLABLE">
+		SELECT  seq,gid,name,heading,cost,st_astext(geom) as geom FROM pgr_fromAtoB(#{dbName},#{x1},
+			#{y1},
+			#{x2},
+			#{y2}
+        ) ORDER BY seq
+	</select>
+
+
+</mapper>
+
