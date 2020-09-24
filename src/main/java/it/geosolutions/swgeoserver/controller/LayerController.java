@@ -4,35 +4,27 @@ import io.swagger.annotations.*;
 import it.geosolutions.swgeoserver.comm.base.BaseGeoserverREST;
 import it.geosolutions.swgeoserver.comm.init.Constants;
 import it.geosolutions.swgeoserver.comm.utils.FileUtils;
+import it.geosolutions.swgeoserver.comm.utils.PageData;
 import it.geosolutions.swgeoserver.comm.utils.PropUtil;
 import it.geosolutions.swgeoserver.comm.utils.SNUtil;
 import it.geosolutions.swgeoserver.entry.Entity;
+import it.geosolutions.swgeoserver.entry.TableNames;
 import it.geosolutions.swgeoserver.exception.ReturnFormat;
-import it.geosolutions.swgeoserver.rest.GeoServerRESTPublisher;
-import it.geosolutions.swgeoserver.rest.GeoServerRESTPublisher.UploadMethod;
 import it.geosolutions.swgeoserver.rest.HTTPUtils;
 import it.geosolutions.swgeoserver.rest.decoder.*;
 import it.geosolutions.swgeoserver.rest.decoder.utils.NameLinkElem;
 import it.geosolutions.swgeoserver.rest.encoder.GSLayerEncoder;
-import it.geosolutions.swgeoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
-import it.geosolutions.swgeoserver.rest.encoder.coverage.GSCoverageEncoderTest;
-import it.geosolutions.swgeoserver.rest.encoder.datastore.GSPostGISDatastoreEncoder;
 import it.geosolutions.swgeoserver.rest.encoder.feature.GSFeatureTypeEncoder;
 import it.geosolutions.swgeoserver.service.TableNamesService;
-import org.apache.commons.httpclient.NameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static org.junit.Assert.assertTrue;
 
 @CrossOrigin
 @RestController
@@ -49,12 +41,17 @@ public class LayerController extends BaseGeoserverREST {
     @Autowired
     private TableNamesService tableNamesService;
 
+    @Override
+    public PageData getPageData() {
+        return super.getPageData();
+    }
+
     @GetMapping(value = "/{workspace}/{layerName}")
     @ApiOperation(value = "查询图层",notes = "图层详情")
     public Object getLayer(@ApiParam(name = "workspace",value = "工作区名称",required = true) @PathVariable String workspace,
                            @ApiParam(name = "layerName",value = "图层名称",required = true) @PathVariable String layerName){
-        String layerNameCn = tableNamesService.getNameCn(layerName);
-        if("".equals(layerNameCn)){
+        TableNames tableNames = tableNamesService.getTableNameByNameEn(layerName);
+        if("".equals(tableNames.getNameCn())){
             return ReturnFormat.retParam(4003,null);
         }
         RESTLayer layer = reader.getLayer(workspace,layerName);
@@ -66,7 +63,7 @@ public class LayerController extends BaseGeoserverREST {
             String crs = featureType.getCRS();
             RESTBoundingBox nativeBoundingBox = featureType.getNativeBoundingBox();
             bbox.append(SNUtil.NonScientificNotation(nativeBoundingBox.getMinX())+",").append(SNUtil.NonScientificNotation(nativeBoundingBox.getMinY())+",").append(SNUtil.NonScientificNotation(nativeBoundingBox.getMaxX())+",").append(SNUtil.NonScientificNotation(nativeBoundingBox.getMaxY())+"");
-            map.put("layerName_CN",workspace+":"+layerNameCn);
+            map.put("layerName_CN",workspace+":"+tableNames.getNameCn());
             map.put("layerName_EN",workspace+":"+layerName);
             map.put("bbox",bbox);
             map.put("crs",crs);
@@ -79,56 +76,53 @@ public class LayerController extends BaseGeoserverREST {
         }
     }
 
-    @GetMapping(value = "/names/{workspace}/{datastore}")
-    @ApiOperation(value = "根据datastore查询图层",notes = "根据datastore查询")
-    public Object getLayerByDS(@ApiParam(name = "workspace",value = "工作区名称",required = true) @PathVariable String workspace,
-                           @ApiParam(name = "datastore",value = "数据存储名称",required = true) @PathVariable String datastore){
-        List layerList = reader.getLayerNames(workspace,datastore);
+    @GetMapping(value = "/layers")
+    @ApiOperation(value = "图层列表",notes = "图层列表")
+    public Object getLayers(){
         List allList = new ArrayList();
-        for (int i=0;i<layerList.size();i++){
-            Map map = new HashMap();
-            String nameCn = tableNamesService.getNameCn(layerList.get(i).toString());
-            map.put("layerName_CN",nameCn);
-            map.put("layerName_EN",layerList.get(i).toString());
-            allList.add(map);
+        RESTLayerList layers = reader.getLayers();
+        for (NameLinkElem elem : layers) {
+            String workspace = elem.getName().split(":")[0];
+            String layerName = elem.getName().split(":")[1];
+            RESTLayer layer = reader.getLayer(workspace,layerName);
+            String resourceClass = layer.getResourceClass();
+            if("featureType".equals(resourceClass)){
+                RESTFeatureType featureType = reader.getFeatureType(layer);
+                Map map = new HashMap();
+                String crs = featureType.getCRS();
+                RESTBoundingBox nativeBoundingBox = featureType.getNativeBoundingBox();
+                StringBuffer center = new StringBuffer("");
+                center.append((nativeBoundingBox.getMinX()+nativeBoundingBox.getMaxX())/2)
+                        .append(",")
+                        .append((nativeBoundingBox.getMinY()+nativeBoundingBox.getMaxY())/2);
+                TableNames tableNames = tableNamesService.getTableNameByNameEn(layerName);
+                if(tableNames!=null){
+                    map.put("id",tableNames.getId());
+                    map.put("layerName_CN",tableNames.getNameCn());
+                    map.put("layerName_EN",workspace+":"+layerName);
+                    map.put("center",center);
+                    allList.add(map);
+                }
+            }else{
+                RESTCoverage coverage = reader.getCoverage(layer);
+                Map map = new HashMap();
+                RESTBoundingBox nativeBoundingBox = coverage.getLatLonBoundingBox();
+                StringBuffer center = new StringBuffer("");
+                center.append((nativeBoundingBox.getMinX()+nativeBoundingBox.getMaxX())/2)
+                        .append(",")
+                        .append((nativeBoundingBox.getMinY()+nativeBoundingBox.getMaxY())/2);
+                TableNames tableNames = tableNamesService.getTableNameByNameEn(layerName);
+                map.put("id",tableNames.getId());
+                map.put("layerName_CN",tableNames.getNameCn());
+                map.put("layerName_EN",workspace+":"+layerName);
+                map.put("center",center);
+//                map.put("crs",crs);
+                allList.add(map);
+            }
         }
         return ReturnFormat.retParam(0,allList);
     }
 
-    @PostMapping(value = "/tif")
-    @ApiOperation(value = "tif查询",notes = "tif列表查询")
-    public Object getTif(@ApiParam(name = "entity",value = "{workspace:workspaceName}",required = true) @RequestBody Entity entity){
-        String workspace  = entity.getWorkSpace();
-        List allList = new ArrayList();
-        List coverageStoreList = new ArrayList();
-        RESTCoverageStoreList coverageStores = reader.getCoverageStores(workspace);
-        if(coverageStores!=null){
-            for (NameLinkElem coverageStore : coverageStores) {
-                String response = HTTPUtils.get(URL_ADD+"rest/workspaces/" +workspace+"/coveragestores/"+ coverageStore.getName()+"/coverages.xml", USER_NAME, PASSWORLD);
-                RESTCoverageList restCoverageList = RESTCoverageList.build(response);
-                for (NameLinkElem nameLinkElem : restCoverageList) {
-                    Map map = new HashMap();
-                    System.out.println(nameLinkElem.getName());
-                    StringBuffer bbox = new StringBuffer("");
-                    RESTCoverage coverage = reader.getCoverage(workspace,nameLinkElem.getName(),nameLinkElem.getName());
-                    String crs = coverage.getCRS();
-                    RESTBoundingBox nativeBoundingBox = coverage.getLatLonBoundingBox();
-                    bbox.append(nativeBoundingBox.getMinX()+",").append(nativeBoundingBox.getMinY()+",").append(nativeBoundingBox.getMaxX()+",").append(nativeBoundingBox.getMaxY()+"");
-                    map.put("layerName_CN",workspace+":"+PropUtil.getKey(nameLinkElem.getName()));
-                    map.put("layerName_EN",workspace+":"+nameLinkElem.getName());
-                    map.put("bbox",bbox);
-                    map.put("crs",crs);
-                    map.put("type","tif");
-                    map.put("layerType","1");
-                    coverageStoreList.add(map);
-                }
-            }
-            allList.addAll(coverageStoreList);
-            return ReturnFormat.retParam(0,allList);
-        }else{
-            return ReturnFormat.retParam(4003,null);
-        }
-    }
 
     /**
      * 发布图层PostGis
@@ -137,6 +131,7 @@ public class LayerController extends BaseGeoserverREST {
      */
     @PostMapping(value = "/publishGis")
     @ApiOperation(value = "发布PostGIS Database",notes = "查询列表")
+    @Transactional
     public Object publishGis(@ApiParam(name = "模型",value = "模型表名",required = true) @RequestBody Entity entity){
         String ws = entity.getWorkSpace();
         String store_name =  entity.getDataStore();
@@ -144,81 +139,129 @@ public class LayerController extends BaseGeoserverREST {
         String layerNameCn = entity.getLayerCn();
         List allList = new ArrayList();
         //判断图层是否已经存在，不存在则创建并发布
-        RESTLayer layer = manager.getReader().getLayer(ws, layerName);
-        if(layer == null){
-            GSFeatureTypeEncoder pds = new GSFeatureTypeEncoder();
-            pds.setTitle(layerName);
-            pds.setName(layerName);
-            pds.setSRS("EPSG:4326");
-
-            GSLayerEncoder layerEncoder = new GSLayerEncoder();
-            boolean publish = manager.getPublisher().publishDBLayer(ws, store_name,  pds, layerEncoder);
-            System.out.println("publish : " + publish);
-
-            layer = reader.getLayer(ws, layerName);
-            Map map = new HashMap();
-            StringBuffer bbox = new StringBuffer("");
-            RESTFeatureType featureType = reader.getFeatureType(layer);
-            String crs = featureType.getCRS();
-            RESTBoundingBox nativeBoundingBox = featureType.getNativeBoundingBox();
-            bbox.append(SNUtil.NonScientificNotation(nativeBoundingBox.getMinX())+",").append(SNUtil.NonScientificNotation(nativeBoundingBox.getMinY())+",").append(SNUtil.NonScientificNotation(nativeBoundingBox.getMaxX())+",").append(SNUtil.NonScientificNotation(nativeBoundingBox.getMaxY())+"");
-            map.put("layerName_CN",ws+":"+layerNameCn);
-            map.put("layerName_EN",ws+":"+featureType.getName());
-            map.put("bbox",bbox);
-            map.put("crs",crs);
-            map.put("type","shp");
-            map.put("layerType","1");
-            allList.add(map);
-        }else {
-            System.out.println("已经发布过图层:" + layerName);
-            return ReturnFormat.retParam(4002,null);
-        }
-        return ReturnFormat.retParam(0,allList);
-    }
-
-
-    /**
-     * 发布图层PostGis
-     * @param entity
-     * @return
-     */
-    @PostMapping(value = "/publishTif")
-    @ApiOperation(value = "发布Tif",notes = "发布Tif")
-    public Object publishTif(@ApiParam(name = "uploadFile",value = "上传文件",required = true) @RequestPart ( value="uploadFile", required = true) MultipartFile uploadFile,
-                             @ApiParam(name = "模型",value = "模型表名",required = true) @RequestBody Entity entity){
-        String ws = entity.getWorkSpace();
-        String store_name =  entity.getDataStore();
-        String layerName = entity.getLayer();
         try{
-            String zipFileName = uploadFile.getOriginalFilename();
-            String name = FileUtils.getFileNameNoEx(zipFileName);
-            String newPath = new File(uploadFilePath).getAbsolutePath() +"/" + zipFileName;
-            File file = new File(newPath);
-            //检测是否存在目录
-            if(!file.getParentFile().exists()){
-                file.getParentFile().mkdirs();
-            }
-            long startTime = System.currentTimeMillis();
-
-            uploadFile.transferTo(file);
-            long endTime = System.currentTimeMillis();
-            System.out.println("文件上传运行时间：" + (endTime - startTime) + "ms");
-            List allList = new ArrayList();
-            //判断图层是否已经存在，不存在则创建并发布
             RESTLayer layer = manager.getReader().getLayer(ws, layerName);
             if(layer == null){
-                publisher.publishGeoTIFF(DEFAULT_WS, store_name, file);
+                GSFeatureTypeEncoder pds = new GSFeatureTypeEncoder();
+                pds.setTitle(layerName);
+                pds.setName(layerName);
+                pds.setSRS("EPSG:4326");
+
+                GSLayerEncoder layerEncoder = new GSLayerEncoder();
+                boolean publish = manager.getPublisher().publishDBLayer(ws, store_name,  pds, layerEncoder);
+                System.out.println("publish : " + publish);
+                /*layer = reader.getLayer(ws, layerName);
+                Map map = new HashMap();
+                StringBuffer bbox = new StringBuffer("");
+                RESTFeatureType featureType = reader.getFeatureType(layer);
+                String crs = featureType.getCRS();
+                RESTBoundingBox nativeBoundingBox = featureType.getNativeBoundingBox();
+//            bbox.append(SNUtil.NonScientificNotation(nativeBoundingBox.getMinX())+",").append(SNUtil.NonScientificNotation(nativeBoundingBox.getMinY())+",").append(SNUtil.NonScientificNotation(nativeBoundingBox.getMaxX())+",").append(SNUtil.NonScientificNotation(nativeBoundingBox.getMaxY())+"");
+                StringBuffer center = new StringBuffer("");
+                center.append((nativeBoundingBox.getMinX()+nativeBoundingBox.getMaxX())/2)
+                        .append(",")
+                        .append((nativeBoundingBox.getMinY()+nativeBoundingBox.getMaxY())/2);
+                TableNames tableNames = tableNamesService.getTableNameByNameEn(layerName);
+                tableNames.setCenter(center.toString());
+                tableNames.setCreateTime(new Date());
+                tableNames.setIsPublish(1l);
+                tableNamesService.updateTableNames(tableNames);
+                map.put("layerName_CN",layerNameCn);
+                map.put("layerName_EN",ws+":"+featureType.getName());
+                map.put("center",center.toString());
+//            map.put("type","shp");
+//            map.put("layerType","1");
+                allList.add(map);*/
+                return ReturnFormat.retParam(0,allList);
             }else {
                 System.out.println("已经发布过图层:" + layerName);
                 return ReturnFormat.retParam(4002,null);
             }
-            return ReturnFormat.retParam(0,null);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ReturnFormat.retParam(1000,allList);
+        }
+    }
+
+    /**
+     * 发布图层MBTiles
+     * @return
+     */
+    @RequestMapping(value = "/publishMBTiles", produces = "application/json;charset=UTF-8", method = RequestMethod.POST)
+    @ApiOperation(value = "发布MBTiles",notes = "发布MBTiles")
+    @Transactional
+    public Object publishMBTiles(@ApiParam(name = "模型",value = "模型表名",required = true) @RequestBody Entity entity){
+        try{
+//            String zipFileName = uploadFile.getOriginalFilename();
+//            String store_name =  zipFileName;
+//            String layerName = zipFileName;
+//            String name = FileUtils.getFileNameNoEx(zipFileName);
+//            String newPath = new File(uploadFilePath).getAbsolutePath() +"/" + zipFileName;
+//            File file = new File(newPath);
+//            //检测是否存在目录
+//            if(!file.getParentFile().exists()){
+//                file.getParentFile().mkdirs();
+//            }
+//            long startTime = System.currentTimeMillis();
+//
+//            uploadFile.transferTo(file);
+//            long endTime = System.currentTimeMillis();
+//            System.out.println("文件上传运行时间：" + (endTime - startTime) + "ms");
+            String workspace = entity.getWorkSpace();
+            String store_name = entity.getDataStore();
+            String layerName = entity.getLayer();
+            String path = entity.getPath();
+            File file = new File(path);
+            List allList = new ArrayList();
+            //判断图层是否已经存在，不存在则创建并发布
+            RESTLayer layer = manager.getReader().getLayer(workspace, layerName);
+            if(layer == null){
+                boolean publish = publisher.publishGeoMBTILES(workspace, store_name,store_name, file);
+                System.out.println("publish : " + publish);
+                /*layer = reader.getLayer(workspace, layerName);
+                RESTCoverage coverage = reader.getCoverage(layer);
+                Map map = new HashMap();
+                RESTBoundingBox nativeBoundingBox = coverage.getLatLonBoundingBox();
+                StringBuffer center = new StringBuffer("");
+                center.append((nativeBoundingBox.getMinX()+nativeBoundingBox.getMaxX())/2)
+                        .append(",")
+                        .append((nativeBoundingBox.getMinY()+nativeBoundingBox.getMaxY())/2);
+                TableNames tableNames = tableNamesService.getTableNameByNameEn(layerName);
+                tableNames.setCenter(center.toString());
+                tableNames.setCreateTime(new Date());
+                tableNames.setIsPublish(1l);
+                tableNamesService.updateTableNames(tableNames);
+                map.put("layerName_CN",tableNames.getNameCn());
+                map.put("layerName_EN",workspace+":"+layerName);
+                map.put("center",center);
+    //                map.put("crs",crs);
+                allList.add(map);*/
+                return ReturnFormat.retParam(0,allList);
+            }else {
+                System.out.println("已经发布过图层:" + layerName);
+                return ReturnFormat.retParam(4002,null);
+            }
         }catch (Exception e){
             e.printStackTrace();
             return ReturnFormat.retParam(1000,null);
         }
 
     }
+
+    /**
+     * 删除CoverageStore
+     * @param entity
+     * @return
+     */
+    @DeleteMapping(value = "/removeCoverageStore")
+    @ApiOperation(value = "删除栅格图层",notes = "删除栅格图层")
+    public Object removeLayer(@ApiParam(name = "模型",value = "模型表名",required = true) @RequestBody Entity entity){
+        String ws = entity.getWorkSpace();
+        String layername = entity.getLayer();
+        publisher.removeCoverageStore(ws, layername,true);
+        return ReturnFormat.retParam(0,null);
+    }
+
 
 
     /**
@@ -1057,5 +1100,100 @@ public class LayerController extends BaseGeoserverREST {
         }
         return allList;
     }*/
+
+
+
+    /*    @GetMapping(value = "/names/{workspace}/{datastore}")
+    @ApiOperation(value = "根据datastore查询图层",notes = "根据datastore查询")
+    public Object getLayerByDS(@ApiParam(name = "workspace",value = "工作区名称",required = true) @PathVariable String workspace,
+                           @ApiParam(name = "datastore",value = "数据存储名称",required = true) @PathVariable String datastore){
+        List layerList = reader.getLayerNames(workspace,datastore);
+        List allList = new ArrayList();
+        for (int i=0;i<layerList.size();i++){
+            Map map = new HashMap();
+            String nameCn = tableNamesService.getNameCn(layerList.get(i).toString());
+            map.put("layerName_CN",nameCn);
+            map.put("layerName_EN",layerList.get(i).toString());
+            allList.add(map);
+        }
+        return ReturnFormat.retParam(0,allList);
+    }*/
+
+    /*@PostMapping(value = "/tif")
+    @ApiOperation(value = "tif查询",notes = "tif列表查询")
+    public Object getTif(@ApiParam(name = "entity",value = "{workspace:workspaceName}",required = true) @RequestBody Entity entity){
+        String workspace  = entity.getWorkSpace();
+        List allList = new ArrayList();
+        List coverageStoreList = new ArrayList();
+        RESTCoverageStoreList coverageStores = reader.getCoverageStores(workspace);
+        if(coverageStores!=null){
+            for (NameLinkElem coverageStore : coverageStores) {
+                String response = HTTPUtils.get(URL_ADD+"rest/workspaces/" +workspace+"/coveragestores/"+ coverageStore.getName()+"/coverages.xml", USER_NAME, PASSWORLD);
+                RESTCoverageList restCoverageList = RESTCoverageList.build(response);
+                for (NameLinkElem nameLinkElem : restCoverageList) {
+                    Map map = new HashMap();
+                    System.out.println(nameLinkElem.getName());
+                    StringBuffer bbox = new StringBuffer("");
+                    RESTCoverage coverage = reader.getCoverage(workspace,nameLinkElem.getName(),nameLinkElem.getName());
+                    String crs = coverage.getCRS();
+                    RESTBoundingBox nativeBoundingBox = coverage.getLatLonBoundingBox();
+                    bbox.append(nativeBoundingBox.getMinX()+",").append(nativeBoundingBox.getMinY()+",").append(nativeBoundingBox.getMaxX()+",").append(nativeBoundingBox.getMaxY()+"");
+                    map.put("layerName_CN",workspace+":"+PropUtil.getKey(nameLinkElem.getName()));
+                    map.put("layerName_EN",workspace+":"+nameLinkElem.getName());
+                    map.put("bbox",bbox);
+                    map.put("crs",crs);
+                    map.put("type","tif");
+                    map.put("layerType","1");
+                    coverageStoreList.add(map);
+                }
+            }
+            allList.addAll(coverageStoreList);
+            return ReturnFormat.retParam(0,allList);
+        }else{
+            return ReturnFormat.retParam(4003,null);
+        }
+    }*/
+
+    /**
+     * 发布图层GeoTiff
+     * @return
+     */
+    /*@RequestMapping(value = "/publishTif/{workspace}", produces = "application/json;charset=UTF-8", method = RequestMethod.POST)
+    @ApiOperation(value = "发布Tif",notes = "发布Tif")
+    public Object publishTif(@ApiParam(name = "uploadFile",value = "上传文件",required = true) @RequestPart ( value="uploadFile", required = true) MultipartFile uploadFile,
+                             @ApiParam(name = "workspace",value = "工作区名称",required = true) @PathVariable (required = true) String workspace){
+        try{
+            String zipFileName = uploadFile.getOriginalFilename();
+            String store_name =  zipFileName;
+            String layerName = zipFileName;
+            String name = FileUtils.getFileNameNoEx(zipFileName);
+            String newPath = new File(uploadFilePath).getAbsolutePath() +"/" + zipFileName;
+            File file = new File(newPath);
+            //检测是否存在目录
+            if(!file.getParentFile().exists()){
+                file.getParentFile().mkdirs();
+            }
+            long startTime = System.currentTimeMillis();
+
+            uploadFile.transferTo(file);
+            long endTime = System.currentTimeMillis();
+            System.out.println("文件上传运行时间：" + (endTime - startTime) + "ms");
+            List allList = new ArrayList();
+            //判断图层是否已经存在，不存在则创建并发布
+            RESTLayer layer = manager.getReader().getLayer(workspace, layerName);
+            if(layer == null){
+                publisher.publishGeoTIFF(workspace, store_name,store_name, file);
+            }else {
+                System.out.println("已经发布过图层:" + layerName);
+                return ReturnFormat.retParam(4002,null);
+            }
+            return ReturnFormat.retParam(0,null);
+        }catch (Exception e){
+            e.printStackTrace();
+            return ReturnFormat.retParam(1000,null);
+        }
+
+    }*/
+
 
 }

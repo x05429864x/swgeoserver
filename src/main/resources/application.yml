@@ -4,7 +4,6 @@ server:
   tomcat:
     uri-encoding: utf-8
   port: 8084
-
 ---
 app:
   evniroment: dev
@@ -19,6 +18,12 @@ mybatis:
   type-aliases-package: it.geosolutions.swgeoserver.entry    # 所有Entity别名类所在包
   mapper-locations:
   - classpath:mybatis/mapper/**/*.xml
+# pagehelper
+pagehelper:
+  helperDialect: postgresql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
 
 ---
 spring:

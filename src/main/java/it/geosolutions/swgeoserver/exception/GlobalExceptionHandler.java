@@ -37,13 +37,13 @@ import java.io.IOException;
 public class GlobalExceptionHandler {
 	static Logger logger = Logger.getLogger(GlobalExceptionHandler.class);
 	
-	@ExceptionHandler(RuntimeException.class)
-	@ResponseBody
-	public Object runtimeExceptionHandler(RuntimeException runtimeException) {
-		logger.error(runtimeException);
-		runtimeException.printStackTrace();
-		return ReturnFormat.retParam(1000, null);
-	}
+//	@ExceptionHandler(RuntimeException.class)
+//	@ResponseBody
+//	public Object runtimeExceptionHandler(RuntimeException runtimeException) {
+//		logger.error(runtimeException);
+//		runtimeException.printStackTrace();
+//		return ReturnFormat.retParam(1000, null);
+//	}
 	
 	// 空指针异常
 	@ExceptionHandler(NullPointerException.class)

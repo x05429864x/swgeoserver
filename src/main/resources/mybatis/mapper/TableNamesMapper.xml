@@ -11,16 +11,26 @@
 		<id property="id" column="id" jdbcType="BIGINT"/>
 		<result property="nameCn" column="name_cn" jdbcType="VARCHAR" />
 		<result property="nameEn" column="name_en" jdbcType="VARCHAR"  />
+		<result property="workspace" column="workspace" jdbcType="VARCHAR"  />
+		<result property="datastore" column="datastore" jdbcType="VARCHAR"  />
+		<result property="center" column="center" jdbcType="VARCHAR"  />
+		<result property="extractPath" column="extract_path" jdbcType="VARCHAR"  />
+		<result property="state" column="state" jdbcType="BIGINT"  />
 		<result property="creater" column="creater" jdbcType="BIGINT"  />
 		<result property="createTime" column="create_time"  jdbcType="TIMESTAMP"/>
 		<result property="updater" column="updater" jdbcType="BIGINT"  />
 		<result property="updateTime" column="update_time"  jdbcType="TIMESTAMP"/>
-		<result property="state" column="state" jdbcType="BIGINT"  />
 		<result property="remark" column="remark" jdbcType="VARCHAR"  />
+		<result property="flag" column="flag" jdbcType="INTEGER"  />
+		<result property="isPublish" column="is_publish" jdbcType="INTEGER"  />
 	</resultMap>
 
 	<select id="getAll" parameterType="Long" resultType="TableNames">
-		select * from <include refid="table"/> where state = #{state} order by id
+		select * from <include refid="table"/> where state = #{state} and is_publish = 0 order by id
+	</select>
+
+	<select id="getPage"  resultMap="tablenamesMap">
+		select * from <include refid="table"/> order by id
 	</select>
 
 	<select id="getByIds" resultType="TableNames" >
@@ -35,14 +45,14 @@
 		select * from <include refid="table"/>
 		<if test="_parameter != null">
 			<where>
-				name_cn like '%${nameCn}%' and name_en like '%${nameEn}%'
+				name_cn = '${nameCn}' or name_en = '${nameEn}'
 			</where>
 		</if>
 		order by id
 	</select>
 
 	<!-- 根据英文查询中文名称-->
-	<select id="getNameCn" resultType="TableNames">
+	<select id="getTableNameByNameEn" resultType="TableNames">
 		select * from <include refid="table"/>
 		<if test="_parameter != null">
 			<where>
@@ -60,8 +70,8 @@
 	<!-- 新增 -->
 	<insert id="insertTableNames" parameterType="TableNames"
 			keyColumn="id" keyProperty="id" useGeneratedKeys="true" >
-		insert into <include refid="table"/>(name_cn,name_en,creater,create_time,updater,update_time,state,remark)
-		values (#{nameCn},#{nameEn},#{creater},#{createTime},#{updater},#{updateTime},#{state},#{remark})
+		insert into <include refid="table"/>(name_cn,name_en,workspace,datastore,extract_path,creater,create_time,updater,update_time,state,remark,flag,is_publish)
+		values (#{nameCn},#{nameEn},#{workspace},#{datastore},#{extractPath},#{creater},#{createTime},#{updater},#{updateTime},#{state},#{remark},#{flag},#{isPublish})
 	</insert>
 
 	<!-- 更新 -->
@@ -70,10 +80,18 @@
 		<trim prefix="set" suffixOverrides=",">
 			<if test="nameCn!=null and nameCn !=''">name_cn=#{nameCn},</if>
 			<if test="nameEn!=null and nameEn !=''">name_en=#{nameEn},</if>
+			<if test="workspace!=null and workspace !=''">workspace=#{workspace},</if>
+			<if test="datastore!=null and datastore !=''">datastore=#{datastore},</if>
+			<if test="center!=null">center=#{center},</if>
+			<if test="extractPath!=null and extractPath !=''">extract_path=#{extractPath},</if>
+			<if test="creater!=null">creater=#{creater},</if>
+			<if test="createTime!=null">create_time=#{createTime},</if>
 			<if test="updater!=null and updater !=''">updater=#{updater},</if>
 			<if test="updateTime!=null">update_time=#{updateTime},</if>
 			<if test="state!=null and state !=''">state=#{state},</if>
 			<if test="remark!=null and remark !=''">remark=#{remark},</if>
+			<if test="flag!=null and flag !=''">flag=#{flag},</if>
+			<if test="isPublish!=null and isPublish !=''">is_publish=#{isPublish},</if>
 		</trim>
 		WHERE id = #{id}
 	</update>

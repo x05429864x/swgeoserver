@@ -7,6 +7,11 @@ server:
 ---
 app:
   evniroment: prod
+
+---
+upload_file_path: /usr/local/shpfile/siweidg_swgeoserver_apache/upload/
+upload_extract_path: /usr/local/shpfile/siweidg_swgeoserver_apache/extract/
+
 ---
 mybatis:
   config-location: classpath:mybatis/mybatis.cfg.xml        # mybatis配置文件所在路径

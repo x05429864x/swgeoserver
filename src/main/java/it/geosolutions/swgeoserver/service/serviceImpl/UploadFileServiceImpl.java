@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@Transactional
+@Transactional()
 public class UploadFileServiceImpl implements UploadFileService {
 
     private static final Logger logger = Logger.getLogger(UploadFileServiceImpl.class);

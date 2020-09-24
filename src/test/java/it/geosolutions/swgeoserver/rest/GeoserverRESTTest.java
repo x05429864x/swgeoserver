@@ -89,7 +89,7 @@ public abstract class GeoserverRESTTest {
         RESTPW = getenv("gsmgr_restpw", "geoserver");
         GS_VERSION = getenv("gsmgr_version", "2.8");*/
 
-    	RESTURL = getenv("gsmgr_resturl", "http://192.168.8.254:8080/geoserver");
+    	RESTURL = getenv("gsmgr_resturl", "http://192.168.8.228:8080/geoserver");
         RESTUSER = getenv("gsmgr_restuser","admin");
         RESTPW = getenv("gsmgr_restpw", "geoserver");
         GS_VERSION = getenv("gsmgr_version", "2.14.1");

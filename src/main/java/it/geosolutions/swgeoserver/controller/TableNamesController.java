@@ -3,11 +3,13 @@ package it.geosolutions.swgeoserver.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import it.geosolutions.swgeoserver.comm.utils.PageRequest;
 import it.geosolutions.swgeoserver.controller.base.BaseController;
 import it.geosolutions.swgeoserver.entry.TableNames;
 import it.geosolutions.swgeoserver.exception.ReturnFormat;
 import it.geosolutions.swgeoserver.service.TableNamesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -28,10 +30,16 @@ public class TableNamesController extends BaseController {
     private TableNamesService tableNamesService;
 
     @GetMapping("/{state}")
-    @ApiOperation(value = "查询所有表名", notes = "查询表名")
+    @ApiOperation(value = "查询所有表名", notes = "查询")
     public Object getAll(@ApiParam(name = "state",value = "状态: 0正常,1作废",required = true) @PathVariable Long state){
         List<TableNames> list = tableNamesService.getAll(state);
         return ReturnFormat.retParam(0,list);
+    }
+
+    @PostMapping(value="/findPage")
+    @ApiOperation(value = "分页查询所有表名", notes = "分页查询")
+    public Object findPage(@RequestParam(required = false) Map<String, String> paramMap) {
+        return tableNamesService.findPage(paramMap);
     }
 
     @GetMapping("/names")
@@ -52,11 +60,13 @@ public class TableNamesController extends BaseController {
     @PostMapping()
     @ApiOperation(value = "增加表名",notes = "新增表名接口")
     public Object insert(@ApiParam(name = "Tablenames",value = "{\n" +
-            "  \"createTime\": \"2020-07-28 12:00:00\",\n" +
-            "  \"creater\": 0,\n" +
+            "  \"workspace\": \"tuban\",\n" +
+            "  \"datastore\": gis,\n" +
             "  \"nameCn\": \"中国\",\n" +
             "  \"nameEn\": \"china\",\n" +
-            "  \"remark\": \"string\",\n" +
+            "  \"remark\": \"remark\",\n" +
+            "  \"flag\": \"栅格:1 矢量:0\",\n" +
+            "  \"creater\": 0,\n" +
             "}",required = true)@RequestBody TableNames t) {
         TableNames tableNames = tableNamesService.getByName(t.getNameCn(),t.getNameEn());
         if(tableNames!=null){
@@ -71,12 +81,17 @@ public class TableNamesController extends BaseController {
 
     @PutMapping()
     @ApiOperation(value = "修改表名",notes = "修改表名接口")
+    @Transactional
     public Object update(@ApiParam(name = "Tablenames",value = "{\n" +
             "  \"id\": 0,\n" +
             "  \"nameCn\": \"中国\",\n" +
             "  \"nameEn\": \"china\",\n" +
-            "  \"remark\": \"string\",\n" +
-            "  \"updateTime\": \"2020-07-28T02:05:36.625Z\",\n" +
+            "  \"workspace\": \"tuban\",\n" +
+            "  \"datastore\": gis,\n" +
+            "  \"nameCn\": \"中国\",\n" +
+            "  \"nameEn\": \"china\",\n" +
+            "  \"remark\": \"remark\",\n" +
+            "  \"flag\": \"栅格:1 矢量:0\",\n" +
             "  \"updater\": 0\n" +
             "}",required = true)@RequestBody TableNames t) {
         t.setUpdateTime(new Date());
@@ -85,7 +100,7 @@ public class TableNamesController extends BaseController {
     }
 
     @PutMapping("/{ids}")
-    @ApiOperation(value = "作废",notes = "作废表名接口")
+    @ApiOperation(value = "作废",notes = "表名作废接口")
     public Object updateState(@ApiParam(name = "ids",value = "ids",required = true)@PathVariable Long[] ids)  {
         tableNamesService.updateState(ids);
         return ReturnFormat.retParam(0,null);

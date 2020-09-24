@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileUtils {
 	/**
@@ -301,5 +303,68 @@ public class FileUtils {
 		}
 		return filename;
 	}
+
+	/**
+	 * 获取路径下的所有文件/文件夹
+	 * @param directoryPath 需要遍历的文件夹路径
+	 * @param isAddDirectory 是否将子文件夹的路径也添加到list集合中
+	 * @return
+	 */
+	public static List<String> getAllFile(String directoryPath,boolean isAddDirectory) {
+		List<String> list = new ArrayList<String>();
+		File baseFile = new File(directoryPath);
+		if (baseFile.isFile() || !baseFile.exists()) {
+			return list;
+		}
+		File[] files = baseFile.listFiles();
+		for (File file : files) {
+			if (file.isDirectory()) {
+				if(isAddDirectory){
+					list.add(file.getAbsolutePath());
+				}
+				list.addAll(getAllFile(file.getAbsolutePath(),isAddDirectory));
+			} else {
+                System.out.println(file.getName());
+				list.add(file.getAbsolutePath());
+			}
+		}
+		return list;
+	}
+
+    /**
+     * 获取路径下的所有文件/文件夹
+     * @param directoryPath 需要遍历的文件夹路径
+     * @param isAddDirectory 是否将子文件夹的路径也添加到list集合中
+     * @return
+     */
+    public static List<String> readMBTiles(String directoryPath,boolean isAddDirectory) {
+        List<String> list = new ArrayList<String>();
+        File baseFile = new File(directoryPath);
+        if (baseFile.isFile() || !baseFile.exists()) {
+            return list;
+        }
+        File[] files = baseFile.listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                if(isAddDirectory){
+                    list.add(file.getName());
+                }
+                list.addAll(getAllFile(file.getAbsolutePath(),isAddDirectory));
+            } else {
+                System.out.println(file.getName());
+                if("mbtiles".equals(getExtensionName(file.getName()))||"db".equals(getExtensionName(file.getName()))||"shp".equals(getExtensionName(file.getName()))){
+					list.add(file.getName());
+					break;
+                }
+
+            }
+        }
+        return list;
+    }
+
+	public static void main(String[] args) {
+        List<String> allFile = readMBTiles("E:\\usr\\local\\shpfile\\siweidg_swgeoserver_apache\\extract\\quanzhou1", false);
+        System.out.println(allFile.toString());
+    }
 
 }

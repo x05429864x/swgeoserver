@@ -690,7 +690,7 @@ public class Geotools {
             //新建feature构造器
             SimpleFeatureTypeBuilder simpleFeatureTypeBuilder = new SimpleFeatureTypeBuilder();
             //设置表名
-            simpleFeatureTypeBuilder.setName(schema.getName().toString().toLowerCase());
+            simpleFeatureTypeBuilder.setName(("shp_"+tableName).toString().toLowerCase());
             //设置坐标系
             simpleFeatureTypeBuilder.setCRS(schema.getCoordinateReferenceSystem());
 

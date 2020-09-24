@@ -25,6 +25,12 @@
 
 package it.geosolutions.swgeoserver.rest;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import it.geosolutions.swgeoserver.comm.utils.JsonUtils;
+import it.geosolutions.swgeoserver.entry.User;
 import it.geosolutions.swgeoserver.rest.decoder.RESTCoverage;
 import it.geosolutions.swgeoserver.rest.decoder.RESTCoverageList;
 import it.geosolutions.swgeoserver.rest.decoder.RESTCoverageStore;
@@ -52,20 +58,18 @@ import it.geosolutions.swgeoserver.rest.decoder.RESTWmsStoreList;
 import it.geosolutions.swgeoserver.rest.decoder.RESTWorkspaceList;
 import it.geosolutions.swgeoserver.rest.decoder.about.GSVersionDecoder;
 import it.geosolutions.swgeoserver.rest.decoder.utils.NameLinkElem;
+import it.geosolutions.swgeoserver.rest.encoder.UserEncoder;
 import it.geosolutions.swgeoserver.rest.manager.GeoServerRESTStructuredGridCoverageReaderManager;
 import it.geosolutions.swgeoserver.rest.manager.GeoServerRESTStyleManager;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -75,6 +79,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author ETj (etj at geo-solutions.it)
  */
+@Transactional
 public class GeoServerRESTReader {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(GeoServerRESTReader.class);
@@ -478,7 +483,6 @@ public class GeoServerRESTReader {
      * Checks if the selected Coverage store is present. Parameter quietOnNotFound can be used for controlling the logging when 404 is returned.
      * 
      * @param workspace workspace of the coveragestore
-     * @param dsName name of the coveragestore
      * @param quietOnNotFound if true, no exception is logged
      * @return boolean indicating if the coveragestore exists
      */
@@ -492,7 +496,6 @@ public class GeoServerRESTReader {
      * Checks if the selected Coverage store is present.
      * 
      * @param workspace workspace of the coveragestore
-     * @param dsName name of the coveragestore
      * @return boolean indicating if the coveragestore exists
      */
     public boolean existsCoveragestore(String workspace, String csName){
@@ -539,7 +542,6 @@ public class GeoServerRESTReader {
      * Checks if the selected Coverage is present. Parameter quietOnNotFound can be used for controlling the logging when 404 is returned.
      * 
      * @param workspace workspace of the coveragestore
-     * @param dsName name of the coveragestore
      * @param name name of the coverage
      * @param quietOnNotFound if true, no exception is logged
      * @return boolean indicating if the coverage exists
@@ -675,7 +677,6 @@ public class GeoServerRESTReader {
      * @param workspace The name of the workspace
      * @param store The name of the WmsStore
      * @param name The name of the Wms
-     * @return wms details as a {@link RESTwms}
      */
     public RESTWms getWms(String workspace, String store, String name) {
         String url = "/rest/workspaces/" + workspace + "/wmsstores/" + store + "/wmslayers/"+name+".xml";
@@ -689,7 +690,6 @@ public class GeoServerRESTReader {
      * Checks if the selected Wms is present. Parameter quietOnNotFound can be used for controlling the logging when 404 is returned.
      * 
      * @param workspace workspace of the wmsstore
-     * @param wsName name of the wmsstore
      * @param name name of the wms
      * @param quietOnNotFound if true, no exception is logged
      * @return boolean indicating if the coverage exists
@@ -1216,5 +1216,48 @@ public class GeoServerRESTReader {
          }
          return null;
      }
+
+    public JSONArray getRoles(){
+        String url = baseurl + "/rest/security/roles.json";
+        String str =  HTTPUtils.get(url, username, password);
+        JSONArray roles = JsonUtils.FormatToArray(str, "roles");
+        return roles;
+    }
+
+    public String addRole(String role){
+        String url = baseurl + "/rest/security/roles/"+role+".json";
+        return HTTPUtils.post(url, null,username, password);
+    }
+
+    public boolean deleteUser(String user){
+        String url = baseurl + "/rest/security/roles/";
+        return HTTPUtils.delete(url,username, password);
+    }
+
+
+    public boolean deleteRole(String role){
+        String url = baseurl + "/rest/security/roles/"+role;
+        return HTTPUtils.delete(url,username, password);
+    }
+
+    public JSONArray getUsers(){
+        String url = baseurl + "/rest/security/usergroup/users.json";
+        String str =  HTTPUtils.get(url, username, password);
+        JSONObject jsonObject = JSONObject.parseObject(str);
+        JSONArray users = jsonObject.getJSONArray("users");
+        return users;
+    }
+
+    public String addUser(JSONObject jsonParam){
+        String url = baseurl + "/rest/security/usergroup/users/";
+        return HTTPUtils.postJson(url, jsonParam.toJSONString(),username, password);
+    }
+
+    //编写方法
+    public static String jsonFormat(String jsonString) {
+        JSONObject object= JSONObject.parseObject(jsonString);
+        jsonString = JSON.toJSONString(object, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
+        return jsonString;
+    }
 
 }

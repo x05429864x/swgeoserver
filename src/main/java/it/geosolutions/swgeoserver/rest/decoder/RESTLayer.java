@@ -180,6 +180,11 @@ public class RESTLayer {
 		return resource.getChildText("abstract");
 	}
 
+	public String getResourceClass() {
+		Element resource = layerElem.getChild("resource");
+		return resource.getAttributeValue("class");
+	}
+
 	public String getNameSpace() {
 		Element resource = layerElem.getChild("resource");
 		return resource.getChild("namespace").getChildText("name");

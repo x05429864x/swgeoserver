@@ -10,11 +10,23 @@ import java.util.Map;
 
 public interface TableNamesMapper {
 
+    /**
+     * 查询全部用户
+     * @return
+     */
     List<TableNames> getAll(Long state);
+
+    /**
+     * 分页查询用户
+     * @return
+     */
+    List<TableNames> getPage();
+
+//    List<TableNames> getAll(Long state);
 
     List<TableNames> getByIds(Long[] ids);
 
-    List<TableNames> getNameCn(@Param("nameEn") String nameEn);
+    List<TableNames> getTableNameByNameEn(@Param("nameEn") String nameEn);
 
     List<String> findTableName();
 

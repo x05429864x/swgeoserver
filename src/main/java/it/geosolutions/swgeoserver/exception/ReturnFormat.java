@@ -11,6 +11,7 @@ public class ReturnFormat {
 	// 初始化状态码与文字说明
 	static {
 		messageMap.put("0", "成功");
+		messageMap.put("1", "失败");
 
 		messageMap.put("400", "Bad Request!");
 		messageMap.put("401", "NotAuthorization");

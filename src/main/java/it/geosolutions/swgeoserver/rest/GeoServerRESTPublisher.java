@@ -60,6 +60,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sf.json.JSONObject;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Connect to a GeoServer instance to publish or modify its contents via REST API.
@@ -70,6 +71,7 @@ import net.sf.json.JSONObject;
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  * @author Lennart Karsten - lennart.k@thinking-aloud.eu
  */
+@Transactional
 public class GeoServerRESTPublisher {
 
     public static final String DEFAULT_CRS = "EPSG:4326";
@@ -779,7 +781,11 @@ public class GeoServerRESTPublisher {
         /** Geo referenced image (JPEG,PNG,TIF) */
         WORLDIMAGE,
         /** Esri ArcGrid */
-        ARCGRID;
+        ARCGRID,
+
+        MBTILES;
+
+
 
         /**
          * Returns a lowercase representation of the parameter value, suitable to construct the rest call.
@@ -1750,6 +1756,27 @@ public class GeoServerRESTPublisher {
             throws FileNotFoundException {
         return publishCoverage(workspace, storeName, CoverageStoreExtension.GEOTIFF,
                 "image/geotiff", geotiff, ParameterConfigure.FIRST, (NameValuePair[]) null);
+    }
+
+    public boolean publishGeoMBTILES(String workspace, String storeName, File mbtiles)
+            throws FileNotFoundException {
+        return publishCoverage(workspace, storeName, CoverageStoreExtension.MBTILES,
+                "image/mbtiles", mbtiles, ParameterConfigure.FIRST, (NameValuePair[]) null);
+    }
+
+    public boolean publishGeoMBTILES(final String workspace, final String storeName,
+                                  final String coverageName, final File mbtiles) throws FileNotFoundException,
+            IllegalArgumentException {
+        if (workspace == null || mbtiles == null)
+            throw new IllegalArgumentException("Unable to proceed, some arguments are null");
+
+        return publishCoverage(
+                workspace,
+                (storeName != null) ? storeName : FilenameUtils.getBaseName(mbtiles
+                        .getAbsolutePath()), CoverageStoreExtension.MBTILES, "image/mbtiles",
+                mbtiles, ParameterConfigure.FIRST,
+                (coverageName != null) ? new NameValuePair[] { new NameValuePair("coverageName",
+                        coverageName) } : (NameValuePair[]) null);
     }
 
     /**

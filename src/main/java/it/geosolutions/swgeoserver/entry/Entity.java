@@ -3,9 +3,13 @@ package it.geosolutions.swgeoserver.entry;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.io.Serializable;
+
 
 @ApiModel(value="模型实体",description="模型")
-public class Entity {
+public class Entity implements Serializable {
+
+    private static final long serialVersionUID = 424401946789509158L;
 
     @ApiModelProperty(value = "工作区名称",dataType = "String")
     private String workSpace;
@@ -18,6 +22,9 @@ public class Entity {
 
     @ApiModelProperty(value = "图层中文名称",dataType = "String")
     private String layerCn;
+
+    @ApiModelProperty(value = "路径",dataType = "String")
+    private String path;
 
     public String getWorkSpace() {
         return workSpace;
@@ -49,5 +56,13 @@ public class Entity {
 
     public void setLayerCn(String layerCn) {
         this.layerCn = layerCn;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }
