@@ -2,8 +2,6 @@ package it.geosolutions.swgeoserver.controller;
 
 import io.swagger.annotations.*;
 import it.geosolutions.swgeoserver.comm.base.BaseGeoserverREST;
-import it.geosolutions.swgeoserver.comm.init.Constants;
-import it.geosolutions.swgeoserver.comm.utils.FileUtils;
 import it.geosolutions.swgeoserver.comm.utils.PageData;
 import it.geosolutions.swgeoserver.comm.utils.PropUtil;
 import it.geosolutions.swgeoserver.comm.utils.SNUtil;

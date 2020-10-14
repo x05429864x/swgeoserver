@@ -23,28 +23,30 @@ public class TableNamesServiceImpl implements TableNamesService {
     TableNamesMapper tableNamesMapper;
 
     @Override
-    public List<TableNames> getAll(Long state) {
-        return tableNamesMapper.getAll(state);
+    public List<TableNames> findTableNames(Map<String ,Object> paramMap) {
+        return tableNamesMapper.findTableNames(paramMap);
     }
 
     @Override
-    public PageResult findPage(Map<String, String> paramMap) {
+    public PageResult findPage(Map<String, Object> paramMap) {
         PageRequest pageRequest = new PageRequest();
-        String order = paramMap.get("order");
-        String sort = paramMap.get("sort");
-        String pageNum = paramMap.get("pageNum");
-        String pageSize = paramMap.get("pageSize");
-        if(order!=null&&sort!=null){
-            pageRequest.setOrder(order);
-            pageRequest.setSort(sort);
+        Object order = paramMap.get("order");
+        Object sort = paramMap.get("sort");
+        Object pageNum = paramMap.get("pageNum");
+        Object pageSize = paramMap.get("pageSize");
+        if(order!=null){
+            pageRequest.setOrder(order.toString());
+        }
+        if(sort!=null){
+            pageRequest.setSort(sort.toString());
         }
         if(pageNum!=null){
-            pageRequest.setPageNum(Integer.parseInt(pageNum));
+            pageRequest.setPageNum(Integer.parseInt(pageNum.toString()));
         }
         if(pageSize!=null){
-            pageRequest.setPageSize(Integer.parseInt(pageSize));
+            pageRequest.setPageSize(Integer.parseInt(pageSize.toString()));
         }
-        return PageUtils.getPageResult(pageRequest, getPageInfo(pageRequest));
+        return PageUtils.getPageResult(pageRequest, getPageInfo(pageRequest,paramMap));
     }
 
     /**
@@ -52,13 +54,13 @@ public class TableNamesServiceImpl implements TableNamesService {
      * @param pageRequest
      * @return
      */
-    private PageInfo<TableNames> getPageInfo(PageRequest pageRequest) {
+    private PageInfo<TableNames> getPageInfo(PageRequest pageRequest,Map<String ,Object> paramMap) {
         int pageNum = pageRequest.getPageNum();
         int pageSize = pageRequest.getPageSize();
         String orderBy = pageRequest.getOrder();
         String sort = pageRequest.getSort();
         PageHelper.startPage(pageNum, pageSize,sort +" "+orderBy);
-        List<TableNames> tableNames = tableNamesMapper.getPage();
+        List<TableNames> tableNames = tableNamesMapper.findTableNames(paramMap);
         return new PageInfo<TableNames>(tableNames);
     }
 

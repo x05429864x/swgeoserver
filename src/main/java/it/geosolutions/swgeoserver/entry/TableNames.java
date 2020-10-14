@@ -57,6 +57,12 @@ public class TableNames implements Serializable {
     @ApiModelProperty(value = "是否发布",dataType = "Integer",example = "0:未发布 1:已发布")
     private Long isPublish;
 
+    @ApiModelProperty(value = "md5",dataType = "String")
+    private String md5;
+
+    @ApiModelProperty(value = "metadata",dataType = "String")
+    private String metadata;
+
     public Long getId() {
         return Id;
     }
@@ -175,5 +181,21 @@ public class TableNames implements Serializable {
 
     public void setIsPublish(Long isPublish) {
         this.isPublish = isPublish;
+    }
+
+    public String getMd5() {
+        return md5;
+    }
+
+    public void setMd5(String md5) {
+        this.md5 = md5;
+    }
+
+    public String getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(String metadata) {
+        this.metadata = metadata;
     }
 }

@@ -1,5 +1,8 @@
 package it.geosolutions.swgeoserver.comm.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 分页请求
  */
@@ -7,15 +10,17 @@ public class PageRequest {
     /**
      * 当前页码
      */
-    private int pageNum = 1;
+    private static int  pageNum = 1;
     /**
      * 每页数量
      */
-    private int pageSize = 5;
+    private static int  pageSize = 20;
 
     private String order = "desc";
 
     private String sort = "id";
+
+    private Map<String ,Object> params = new HashMap<>();
 
     public int getPageNum() {
         return pageNum;
@@ -44,5 +49,13 @@ public class PageRequest {
 
     public void setSort(String sort) {
         this.sort = sort;
+    }
+
+    public Map<String, Object> getParams() {
+        return params;
+    }
+
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
     }
 }

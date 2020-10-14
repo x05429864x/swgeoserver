@@ -1,28 +1,26 @@
 package it.geosolutions.swgeoserver.controller;
 
 import io.swagger.annotations.*;
-import it.geosolutions.swgeoserver.comm.utils.CompressFileUtils;
 import it.geosolutions.swgeoserver.comm.utils.FileUtils;
 import it.geosolutions.swgeoserver.comm.utils.Geotools;
+import it.geosolutions.swgeoserver.comm.utils.MD5Utils;
 import it.geosolutions.swgeoserver.comm.utils.PGDatastore;
 import it.geosolutions.swgeoserver.config.ApiJsonObject;
 import it.geosolutions.swgeoserver.config.ApiJsonProperty;
 import it.geosolutions.swgeoserver.controller.base.BaseController;
-import it.geosolutions.swgeoserver.dao.UploadFileMapper;
+import it.geosolutions.swgeoserver.dao.SqliteDao;
 import it.geosolutions.swgeoserver.entry.TableNames;
-import it.geosolutions.swgeoserver.entry.TablesEntity;
 import it.geosolutions.swgeoserver.exception.ReturnFormat;
 import it.geosolutions.swgeoserver.service.TableNamesService;
 import it.geosolutions.swgeoserver.service.UploadFileService;
 import net.lingala.zip4j.core.ZipFile;
+import net.sf.json.JSONArray;
 import org.geotools.data.DataStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -215,19 +213,24 @@ public class UploadController extends BaseController {
 //            }
         }
 
+
         TableNames tableNames = new TableNames();
         tableNames.setState(0L);
         tableNames.setIsPublish(0L);
         tableNames.setWorkspace(workspace);
         tableNames.setNameCn(tableName);
+
         list = FileUtils.readMBTiles(extractFilePath + name, false);
         if(list.size()>0){
             MBTilesName = list.get(0);
             filePath = extractFilePath + name+"/"+MBTilesName;
+
         }else{
             return ReturnFormat.retParam(2017, tableNames);
         }
         tableNames.setExtractPath(filePath);
+        String md5 = MD5Utils.getFileMD5String(new File(filePath));
+        tableNames.setMd5(md5);
         if("auxiliary".equals(workspace)||"tuban".equals(workspace)){
             tableNames.setNameEn("shp_"+name);
             tableNames.setFlag(0);
@@ -274,6 +277,21 @@ public class UploadController extends BaseController {
             tableNames.setNameEn(newName);
             tableNames.setFlag(1);
             tableNames.setDatastore(newName);
+
+            String metadata_sql = "select * from metadata";
+            List<Map> dblist = null;
+            try{
+                dblist =  SqliteDao.executeQuery("E:\\usr\\local\\shpfile\\siweidg_swgeoserver_apache\\extract\\quanzhou1\\quanzhou1.mbtiles", metadata_sql);
+                if (dblist == null || dblist.size() < 1) {
+                    throw new RuntimeException("没有在数据库中查到有关结果");
+                } else {
+                    String json = JSONArray.fromObject(dblist).toString();
+                    tableNames.setMetadata(json);
+                }
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+
             tableNamesService.insertTableNames(tableNames);
         }
         return ReturnFormat.retParam(0, tableNames);

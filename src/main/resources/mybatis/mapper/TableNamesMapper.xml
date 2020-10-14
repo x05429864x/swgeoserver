@@ -23,10 +23,21 @@
 		<result property="remark" column="remark" jdbcType="VARCHAR"  />
 		<result property="flag" column="flag" jdbcType="INTEGER"  />
 		<result property="isPublish" column="is_publish" jdbcType="INTEGER"  />
+		<result property="md5" column="md5" jdbcType="VARCHAR"  />
+		<result property="metadata" column="metadata" jdbcType="VARCHAR"  />
 	</resultMap>
 
-	<select id="getAll" parameterType="Long" resultType="TableNames">
-		select * from <include refid="table"/> where state = #{state} and is_publish = 0 order by id
+	<select id="findTableNames" parameterType="Map" resultType="TableNames">
+		select * from <include refid="table"/>
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="state != null">
+				AND state = #{state}
+			</if>
+			<if test="isPublish != null">
+				AND is_publish = #{isPublish}
+			</if>
+		</trim>
+		order by id
 	</select>
 
 	<select id="getPage"  resultMap="tablenamesMap">
@@ -70,8 +81,8 @@
 	<!-- 新增 -->
 	<insert id="insertTableNames" parameterType="TableNames"
 			keyColumn="id" keyProperty="id" useGeneratedKeys="true" >
-		insert into <include refid="table"/>(name_cn,name_en,workspace,datastore,extract_path,creater,create_time,updater,update_time,state,remark,flag,is_publish)
-		values (#{nameCn},#{nameEn},#{workspace},#{datastore},#{extractPath},#{creater},#{createTime},#{updater},#{updateTime},#{state},#{remark},#{flag},#{isPublish})
+		insert into <include refid="table"/>(name_cn,name_en,workspace,datastore,extract_path,creater,create_time,updater,update_time,state,remark,flag,is_publish,md5,metadata)
+		values (#{nameCn},#{nameEn},#{workspace},#{datastore},#{extractPath},#{creater},#{createTime},#{updater},#{updateTime},#{state},#{remark},#{flag},#{isPublish},#{md5},#{metadata})
 	</insert>
 
 	<!-- 更新 -->
@@ -92,6 +103,8 @@
 			<if test="remark!=null and remark !=''">remark=#{remark},</if>
 			<if test="flag!=null and flag !=''">flag=#{flag},</if>
 			<if test="isPublish!=null and isPublish !=''">is_publish=#{isPublish},</if>
+			<if test="md5!=null and md5 !=''">md5=#{md5},</if>
+			<if test="metadata!=null and metadata !=''">metadata=#{metadata},</if>
 		</trim>
 		WHERE id = #{id}
 	</update>

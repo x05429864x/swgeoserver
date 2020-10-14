@@ -20,10 +20,10 @@ import java.util.Map;
 @RequestMapping("/")
 public class IndexController extends BaseController {
 
-    @GetMapping("/")
-    public String index() {
-        return "/build/index.html";
-    }
+//    @GetMapping("/")
+//    public String index() {
+//        return "/build/index.html";
+//    }
 
     @Test
     public StringBuilder geo2server() throws IOException {

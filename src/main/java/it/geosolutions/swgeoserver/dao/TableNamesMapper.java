@@ -14,7 +14,7 @@ public interface TableNamesMapper {
      * 查询全部用户
      * @return
      */
-    List<TableNames> getAll(Long state);
+    List<TableNames> findTableNames(Map paramMap);
 
     /**
      * 分页查询用户

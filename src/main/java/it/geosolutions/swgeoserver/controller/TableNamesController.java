@@ -3,18 +3,23 @@ package it.geosolutions.swgeoserver.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import it.geosolutions.swgeoserver.comm.base.BaseGeoserverREST;
 import it.geosolutions.swgeoserver.comm.utils.PageRequest;
+import it.geosolutions.swgeoserver.comm.utils.SNUtil;
 import it.geosolutions.swgeoserver.controller.base.BaseController;
 import it.geosolutions.swgeoserver.entry.TableNames;
 import it.geosolutions.swgeoserver.exception.ReturnFormat;
+import it.geosolutions.swgeoserver.rest.decoder.RESTBoundingBox;
+import it.geosolutions.swgeoserver.rest.decoder.RESTFeatureType;
+import it.geosolutions.swgeoserver.rest.decoder.RESTLayer;
 import it.geosolutions.swgeoserver.service.TableNamesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 //实现跨域注解
 //origin="*"代表所有域名都可访问
@@ -24,21 +29,30 @@ import java.util.Map;
 @RestController
 @RequestMapping("/table")
 @Api(tags = "表名接口", description = "表名")
-public class TableNamesController extends BaseController {
+public class TableNamesController extends BaseGeoserverREST {
 
     @Autowired
     private TableNamesService tableNamesService;
 
-    @GetMapping("/{state}")
-    @ApiOperation(value = "查询所有表名", notes = "查询")
-    public Object getAll(@ApiParam(name = "state",value = "状态: 0正常,1作废",required = true) @PathVariable Long state){
-        List<TableNames> list = tableNamesService.getAll(state);
+    @PostMapping("/findTableNames")
+    @ApiOperation(value = "图层查询接口", notes = "图层查询接口")
+    public Object findTableNames(@ApiParam(name = "paramMap",value = "{\n" +
+                                             "  \"state\": \"状态: 0正常,1作废\",\n" +
+                                             "  \"isPublish\":\"0:未发布,1:已发布\"\n" +
+                                             "}")@RequestBody Map<String ,Object> paramMap){
+        List<TableNames> list = tableNamesService.findTableNames(paramMap);
         return ReturnFormat.retParam(0,list);
     }
 
     @PostMapping(value="/findPage")
-    @ApiOperation(value = "分页查询所有表名", notes = "分页查询")
-    public Object findPage(@RequestParam(required = false) Map<String, String> paramMap) {
+    @ApiOperation(value = "分页查询所有图层", notes = "分页查询")
+    public Object findPage(@ApiParam(name = "paramMap",value = "{\n" +
+            "  \"pageNum\": 1,\n" +
+            "  \"pageSize\": 20,\n" +
+            "  \"state\": \"状态: 0正常,1作废\",\n" +
+            "  \"isPublish\":\"0:未发布,1:已发布\"\n" +
+            "}",required = true)@RequestBody(required = false) Map<String, Object> paramMap) {
+//        PageInfo<> page = tableNamesService.
         return tableNamesService.findPage(paramMap);
     }
 
@@ -49,10 +63,14 @@ public class TableNamesController extends BaseController {
         return ReturnFormat.retParam(0,list);
     }
 
-    @GetMapping("/{nameCn}/{nameEn}")
+    @PostMapping("/names")
     @ApiOperation(value = "查询单个表名",notes = "查询单个表名接口,查询条件待商榷")
-    public Object getTableNames(@ApiParam(name = "nameCn",value = "中文名称",required = true) @PathVariable String nameCn,
-                                @ApiParam(name = "nameEn",value = "英文名称",required = true) @PathVariable String nameEn){
+    public Object getTableNames(@ApiParam(name = "paramMap",value = "{\n" +
+            "  \"nameCn\": \"中文名称\",\n" +
+            "  \"nameEn\":\"英文名称\"\n" +
+            "}",required = true)@RequestBody(required = true) Map<String, String> paramMap){
+        String nameCn = paramMap.get("nameCn");
+        String nameEn = paramMap.get("nameEn");
         TableNames tableNames = tableNamesService.getByName(nameCn,nameEn);
         return ReturnFormat.retParam(0,tableNames);
     }
