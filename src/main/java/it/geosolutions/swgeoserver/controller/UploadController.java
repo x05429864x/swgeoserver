@@ -1,5 +1,6 @@
 package it.geosolutions.swgeoserver.controller;
 
+import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.*;
 import it.geosolutions.swgeoserver.comm.utils.FileUtils;
 import it.geosolutions.swgeoserver.comm.utils.Geotools;
@@ -14,7 +15,6 @@ import it.geosolutions.swgeoserver.exception.ReturnFormat;
 import it.geosolutions.swgeoserver.service.TableNamesService;
 import it.geosolutions.swgeoserver.service.UploadFileService;
 import net.lingala.zip4j.core.ZipFile;
-import net.sf.json.JSONArray;
 import org.geotools.data.DataStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -279,13 +280,13 @@ public class UploadController extends BaseController {
             tableNames.setDatastore(newName);
 
             String metadata_sql = "select * from metadata";
-            List<Map> dblist = null;
+            Map map = new HashMap();
             try{
-                dblist =  SqliteDao.executeQuery("E:\\usr\\local\\shpfile\\siweidg_swgeoserver_apache\\extract\\quanzhou1\\quanzhou1.mbtiles", metadata_sql);
-                if (dblist == null || dblist.size() < 1) {
+                map =  SqliteDao.executeQuery(filePath, metadata_sql);
+                if (map == null || map.size() < 1) {
                     throw new RuntimeException("没有在数据库中查到有关结果");
                 } else {
-                    String json = JSONArray.fromObject(dblist).toString();
+                    String json = JSON.toJSONString(map);
                     tableNames.setMetadata(json);
                 }
             }catch (Exception e) {

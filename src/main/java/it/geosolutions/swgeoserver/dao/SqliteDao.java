@@ -1,9 +1,6 @@
 package it.geosolutions.swgeoserver.dao;
 
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import net.sf.json.JSONArray;
+import com.alibaba.fastjson.JSON;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -138,14 +135,18 @@ public class SqliteDao {
 	 * @param sql
 	 * @return
 	 */
-	public static List<Map> executeQuery(String dbName, String sql) {
+	public static Map executeQuery(String dbName, String sql) {
 		Connection connection = getConnection(dbName);
 		PreparedStatement pst = getPrepStatement(connection, sql);
 		ResultSet rs = null;
 		try {
 			rs = pst.executeQuery();
 			List<Map> result = resultSetToList(rs);
-			return result;
+			Map map = new HashMap();
+			for (Map res : result){
+				map.put(res.get("name"),res.get("value"));
+			}
+			return map;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -181,10 +182,11 @@ public class SqliteDao {
 				rowData.put(md.getColumnName(i), rs.getObject(i));
 			}
 			list.add(rowData);
-			System.out.println("list:" + list.toString());
+//			System.out.println("list:" + list.toString());
 		}
 		return list;
 	}
+
 
 	/**
 	 * 执行insert update delete
@@ -209,19 +211,19 @@ public class SqliteDao {
 	public static void main(String[] args) {
 		String metadata_sql = "select * from metadata";
 		System.out.println("查询db文件:" +"" + "的sql : " + metadata_sql);
-		List<Map> dblist = null;
+		Map map = new HashMap();
 		try{
-			dblist =  SqliteDao.executeQuery("E:\\usr\\local\\shpfile\\siweidg_swgeoserver_apache\\extract\\quanzhou1\\quanzhou1.mbtiles", metadata_sql);
+			map =  SqliteDao.executeQuery("E:\\usr\\local\\shpfile\\siweidg_swgeoserver_apache\\extract\\quanzhou1\\quanzhou1.mbtiles", metadata_sql);
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		if (dblist == null || dblist.size() < 1) {
+		if (map == null || map.size() < 1) {
 			// 如果数据库中没有查到则返回默认
 			// System.out.println("没有在数据库中查到有关结果");
 			throw new RuntimeException("没有在数据库中查到有关结果");
 		} else {
-			String json = JSONArray.fromObject(dblist).toString();
+			String json = JSON.toJSONString(map);
 			System.out.println(json);
 		}
 	}
