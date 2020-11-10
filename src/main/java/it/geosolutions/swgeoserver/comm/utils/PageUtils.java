@@ -10,7 +10,7 @@ public class PageUtils {
      * @param pageInfo
      * @return
      */
-    public static PageResult getPageResult(PageRequest pageRequest, PageInfo<?> pageInfo) {
+    public static PageResult getPageResult(PageRequest pageRequest,PageInfo<?> pageInfo) {
         PageResult pageResult = new PageResult();
         pageResult.setPageNum(pageInfo.getPageNum());
         pageResult.setPageSize(pageInfo.getPageSize());

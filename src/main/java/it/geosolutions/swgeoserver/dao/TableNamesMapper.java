@@ -32,6 +32,8 @@ public interface TableNamesMapper {
 
     TableNames getByName(@Param("nameCn") String nameCn, @Param("nameEn") String nameEn);
 
+    TableNames getByNameCn(@Param("nameCn") String nameCn);
+
     int insertTableNames(TableNames t);
 
     int deleteTableNames(Long[] ids);

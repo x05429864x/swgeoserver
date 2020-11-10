@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/datastore")
-@Api(tags = "数据存储接口", description = "数据存储")
+//@RestController
+//@RequestMapping("/datastore")
+//@Api(tags = "数据存储接口", description = "数据存储")
 public class DataStoreController  extends BaseGeoserverREST {
 
     /**************************数据存储***********************/

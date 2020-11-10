@@ -1,6 +1,7 @@
 package it.geosolutions.swgeoserver.service;
 
 
+import it.geosolutions.swgeoserver.comm.utils.PageRequest;
 import it.geosolutions.swgeoserver.comm.utils.PageResult;
 import it.geosolutions.swgeoserver.entry.TableNames;
 
@@ -19,7 +20,7 @@ public interface TableNamesService {
      * @param pageRequest 自定义，统一分页查询请求
      * @return PageResult 自定义，统一分页查询结果
      */
-    PageResult findPage(Map<String, Object> paramMap);
+    PageResult findPage(PageRequest pageRequest);
 
     List<String> findTableName();
 
@@ -28,6 +29,8 @@ public interface TableNamesService {
     TableNames getTableNameByNameEn(String nameEn);
 
     TableNames getByName(String nameCn,String nameEn);
+
+    TableNames getByNameCn(String nameCn);
 
     int insertTableNames(TableNames tableNames);
 

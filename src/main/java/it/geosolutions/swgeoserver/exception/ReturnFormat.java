@@ -46,6 +46,7 @@ public class ReturnFormat {
 		messageMap.put("2030", "表已经存在");
 		messageMap.put("2031", "上传文件过大");
 		messageMap.put("2032", "表不存在");
+		messageMap.put("2033", "不能删除工作数据");
 
 		messageMap.put("3001", "有数据");
 		messageMap.put("3002", "没有数据");

@@ -147,7 +147,7 @@ public class GeoserverRESTShapeTest extends GeoserverRESTTest {
         }
 //        //deleteAllWorkspacesRecursively();
         
-        assertTrue(publisher.createWorkspace(DEFAULT_WS));
+//        assertTrue(publisher.createWorkspace(DEFAULT_WS));
 
         String storeName = "resttestshp";
         String layerName = "cities";
@@ -289,6 +289,7 @@ public class GeoserverRESTShapeTest extends GeoserverRESTTest {
         // test insert
         if(!existsLayer(layerName)) {
         	boolean published = publisher.publishShp(DEFAULT_WS, storeName, layerName, zipFile, "EPSG:4326", styleName);
+            System.out.println(published);
             assertTrue("publish() failed", published);
         }else {
         	System.out.println("layerName："+layerName+"已存在！");

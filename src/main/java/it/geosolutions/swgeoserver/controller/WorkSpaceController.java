@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/workspace")
-@Api(tags = "工作区接口", description = "工作区")
+//@RestController
+//@RequestMapping("/workspace")
+//@Api(tags = "工作区接口", description = "工作区")
 public class WorkSpaceController extends BaseGeoserverREST {
 
     /**************************工作区***********************/

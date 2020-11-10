@@ -3,7 +3,6 @@ package it.geosolutions.swgeoserver.dao;
 import it.geosolutions.swgeoserver.entry.TablesEntity;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

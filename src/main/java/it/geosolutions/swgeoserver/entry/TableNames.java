@@ -27,11 +27,11 @@ public class TableNames implements Serializable {
     @ApiModelProperty(value = "存储",dataType = "String")
     private String datastore;
 
-    @ApiModelProperty(value = "中心点",dataType = "String")
-    private String center;
+    /*@ApiModelProperty(value = "中心点",dataType = "String")
+    private String center;*/
 
-    @ApiModelProperty(value = "解压路径",dataType = "String")
-    private String extractPath;
+   /* @ApiModelProperty(value = "解压路径",dataType = "String")
+    private String extractPath;*/
 
     @ApiModelProperty(value = "创建人",dataType = "long")
     private Long creater;
@@ -54,11 +54,11 @@ public class TableNames implements Serializable {
     @ApiModelProperty(value = "矢量/栅格",dataType = "Integer",example = "0:矢量,1:栅格")
     private Integer flag;
 
-    @ApiModelProperty(value = "是否发布",dataType = "Integer",example = "0:未发布 1:已发布")
-    private Long isPublish;
+  /*  @ApiModelProperty(value = "是否发布",dataType = "Integer",example = "0:未发布 1:已发布")
+    private Long isPublish;*/
 
-    @ApiModelProperty(value = "md5",dataType = "String")
-    private String md5;
+    /*@ApiModelProperty(value = "md5",dataType = "String")
+    private String md5;*/
 
     @ApiModelProperty(value = "metadata",dataType = "String")
     private String metadata;
@@ -151,44 +151,12 @@ public class TableNames implements Serializable {
         this.workspace = workspace;
     }
 
-    public String getCenter() {
-        return center;
-    }
-
-    public void setCenter(String center) {
-        this.center = center;
-    }
-
-    public String getExtractPath() {
-        return extractPath;
-    }
-
-    public void setExtractPath(String extractPath) {
-        this.extractPath = extractPath;
-    }
-
     public String getDatastore() {
         return datastore;
     }
 
     public void setDatastore(String datastore) {
         this.datastore = datastore;
-    }
-
-    public Long getIsPublish() {
-        return isPublish;
-    }
-
-    public void setIsPublish(Long isPublish) {
-        this.isPublish = isPublish;
-    }
-
-    public String getMd5() {
-        return md5;
-    }
-
-    public void setMd5(String md5) {
-        this.md5 = md5;
     }
 
     public String getMetadata() {

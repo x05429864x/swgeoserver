@@ -331,6 +331,28 @@ public class FileUtils {
 		return list;
 	}
 
+	/**
+	 * 获取路径下的shp文件名
+	 * @param directoryPath 需要遍历的文件夹路径
+	 * @param isAddDirectory 是否将子文件夹的路径也添加到list集合中
+	 * @return
+	 */
+	public static String getShpFileName(String directoryPath) {
+		File file = new File(directoryPath);
+		File[] files = file.listFiles();
+		String fName = "";
+		for(File f : files){
+			if(f.isDirectory()) {
+//                saveTable(shpPath,tableName,flag);
+			} else {
+				if(f.getName().endsWith(".shp")) {
+					fName = f.getName().substring(0,f.getName().length()-3);
+				}
+			}
+		}
+		return fName;
+	}
+
     /**
      * 获取路径下的所有文件/文件夹
      * @param directoryPath 需要遍历的文件夹路径
@@ -352,7 +374,7 @@ public class FileUtils {
                 list.addAll(getAllFile(file.getAbsolutePath(),isAddDirectory));
             } else {
                 System.out.println(file.getName());
-                if("mbtiles".equals(getExtensionName(file.getName()))||"db".equals(getExtensionName(file.getName()))||"shp".equals(getExtensionName(file.getName()))){
+                if("mbtiles".equals(getExtensionName(file.getName()))||"db".equals(getExtensionName(file.getName()))||"shp".equals(getExtensionName(file.getName()))||"tif".equals(getExtensionName(file.getName()))){
 					list.add(file.getName());
 					break;
                 }

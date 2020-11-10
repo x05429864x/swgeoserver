@@ -1,7 +1,6 @@
 package it.geosolutions.swgeoserver.controller.base;
 
 import it.geosolutions.swgeoserver.comm.utils.*;
-import it.geosolutions.swgeoserver.entry.Page;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -15,12 +14,6 @@ public class BaseController {
 	protected ResultDataUtil<Object> resultDataUtil = new ResultDataUtil<Object>();
 	protected GeoJsonUtil geoJsonUtil = new GeoJsonUtil();
 
-	/**
-	 * 得到PageData
-	 */
-	public PageData getPageData() {
-		return new PageData(this.getRequest());
-	}
 
 
 	/**
@@ -43,11 +36,4 @@ public class BaseController {
 		return UuidUtil.get32UUID();
 	}
 
-	/**
-	 * 得到分页列表的信息
-	 */
-	public Page getPage() {
-
-		return new Page();
-	}
 }
