@@ -47,16 +47,12 @@ public class TableNamesServiceImpl implements TableNamesService {
         return new PageInfo<TableNames>(tableNames);
     }
 
-    @Override
-    public List<String> findTableName() {
-        return tableNamesMapper.findTableName();
-    }
 
     @Override
     public List<TableNames> getByIds(Long[] ids) { return tableNamesMapper.getByIds(ids); }
 
     @Override
-    public TableNames getTableNameByNameEn(String nameEn){
+    public TableNames getByNameEn(String nameEn){
         List<TableNames> ts = tableNamesMapper.getTableNameByNameEn(nameEn);
         if (ts.size()>0){
             return ts.get(0);
@@ -80,8 +76,9 @@ public class TableNamesServiceImpl implements TableNamesService {
         return tableNamesMapper.insertTableNames(tableNames);
     }
 
+
     @Override
-    public int deleteTableNames(Long[] ids) { return tableNamesMapper.deleteTableNames(ids); }
+    public int delete(Long id) { return tableNamesMapper.delete(id); }
 
     @Override
     public int updateTableNames(TableNames tableNames) {
@@ -89,8 +86,14 @@ public class TableNamesServiceImpl implements TableNamesService {
     }
 
     @Override
-    public int updateState(Long[] ids) { return tableNamesMapper.updateState(ids); }
-
-    @Override
     public int dropTable(String names) { return tableNamesMapper.dropTable(names); }
+
+    /*@Override
+    public List<String> findTableName() {
+        return tableNamesMapper.findTableName();
+    }
+    @Override
+    public int deleteTableNames(Long[] ids) { return tableNamesMapper.deleteTableNames(ids); }
+    @Override
+    public int updateState(Long[] ids) { return tableNamesMapper.updateState(ids); }*/
 }

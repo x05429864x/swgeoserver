@@ -1,5 +1,6 @@
 package it.geosolutions.swgeoserver.comm.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPolygon;
@@ -494,14 +495,47 @@ public class ShpReadUtils {
 	        while (itertor.hasNext()) {  
 	            SimpleFeature feature = itertor.next();  
 	            Map<String,Object> data = new HashMap<String, Object>();
+	            Map<String,Object> info1 = new HashMap<String, Object>();
+	            Map<String,Object> info2 = new HashMap<String, Object>();
 	            for (AttributeDescriptor attributeDes : columns) {
 	            	String attributeName = attributeDes.getName().toString();
-	            	 Object attribute = feature.getAttribute(attributeName);
-	            	 if(attribute.toString().contains("'")){
-	            	 	attribute = attribute.toString().replace("'","''");
-					 }
-	            	data.put(attributeName, attribute);
-	            }  
+	            	Object attribute = feature.getAttribute(attributeName);
+						if(attribute.toString().contains("'")){
+							attribute = attribute.toString().replace("'","''");
+						}
+
+						if(!attributeName.equalsIgnoreCase("gid")){
+							if(attributeName.equalsIgnoreCase("postpha")){
+								info1.put(attributeName,attribute);
+							} else if(attributeName.equalsIgnoreCase("forwardcla")){
+								info1.put(attributeName,attribute);
+							} else if(attributeName.equalsIgnoreCase("picturefir")){
+								info1.put(attributeName,attribute);
+							} else if(attributeName.equalsIgnoreCase("picdesfirs")){
+								info1.put(attributeName,attribute);
+							} else if(attributeName.equalsIgnoreCase("forwardpha")){
+								info2.put(attributeName,attribute);
+							} else if(attributeName.equalsIgnoreCase("postcalss")){
+								info2.put(attributeName,attribute);
+							} else if(attributeName.equalsIgnoreCase("picturesec")){
+								info2.put(attributeName,attribute);
+							} else if(attributeName.equalsIgnoreCase("picdesseco")){
+								info2.put(attributeName,attribute);
+							} else {
+								data.put(attributeName, attribute);
+							}
+						}
+
+
+
+	            }
+	            if(info1.size()>0&&info2.size()>0){
+					String json1 = JSON.toJSONString(info1);
+					String json2 = JSON.toJSONString(info2);
+					data.put("info1",json1);
+					data.put("info2",json2);
+				}
+
 	            dataList.add(data);
 	        }  
 	        itertor.close();

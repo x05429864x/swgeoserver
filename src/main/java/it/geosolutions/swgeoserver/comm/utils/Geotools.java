@@ -659,9 +659,9 @@ public class Geotools {
      * @param spatialName
      * @return
      */
-    public static DataStore createTable(String shpPath, String tableName,String spatialName) {
+    public static DataStore createTable(String shpPath, String fileName,String tableName,String spatialName) {
         try {
-            ShapefileDataStore shapefileDataStore = new ShapefileDataStore(new File(shpPath).toURI().toURL());
+            ShapefileDataStore shapefileDataStore = new ShapefileDataStore(new File(shpPath+fileName).toURI().toURL());
             shapefileDataStore.setCharset(ShpCharset.UTF_8);
 //            FeatureCollection featureCollection = shapefileDataStore.getFeatureSource().getFeatures();
 
@@ -733,6 +733,7 @@ public class Geotools {
             schema = simpleFeatureTypeBuilder.buildFeatureType();
             //创建数据表
             postgisDatasore.createSchema(schema);
+            it.geosolutions.swgeoserver.comm.utils.FileUtils.delFolder(shpPath);
             logger.info("创建成功！");
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -805,7 +806,7 @@ public class Geotools {
         long shp2pgStart = System.currentTimeMillis();
         DataStore pgds = PGDatastore.getDefeaultDatastore();
         SimpleFeatureSource featureSource = readSHP("C:\\Users\\x\\Desktop\\yunnan02\\yunnan02\\yunnan02.shp");
-        DataStore ds = createTable("C:\\Users\\x\\Desktop\\yunnan02\\yunnan02\\yunnan02.shp","yunnan02","");
+        DataStore ds = createTable("C:\\Users\\x\\Desktop\\yunnan02\\yunnan02\\","yunnan02.shp","yunnan02","");
 //        writeShp2DataBin(ds, featureSource);
         long shp2pgEnd = System.currentTimeMillis();
         System.out.println("写入数据库运行时间：" + (shp2pgEnd - shp2pgStart) + "ms");

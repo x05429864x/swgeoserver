@@ -22,13 +22,9 @@ public interface TableNamesMapper {
      */
     List<TableNames> getPage();
 
-//    List<TableNames> getAll(Long state);
-
     List<TableNames> getByIds(Long[] ids);
 
     List<TableNames> getTableNameByNameEn(@Param("nameEn") String nameEn);
-
-    List<String> findTableName();
 
     TableNames getByName(@Param("nameCn") String nameCn, @Param("nameEn") String nameEn);
 
@@ -36,12 +32,14 @@ public interface TableNamesMapper {
 
     int insertTableNames(TableNames t);
 
-    int deleteTableNames(Long[] ids);
+    int delete(Long id);
 
     int updateTableNames(TableNames t);
 
-    int updateState(Long[] ids);
-
     int dropTable(@Param("names")String names);
+
+    /*int deleteTableNames(Long[] ids);
+    List<String> findTableName();
+    int updateState(Long[] ids);*/
 
 }

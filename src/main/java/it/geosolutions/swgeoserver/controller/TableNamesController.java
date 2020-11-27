@@ -1,6 +1,6 @@
 package it.geosolutions.swgeoserver.controller;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +55,7 @@ public class TableNamesController extends BaseGeoserverREST {
             "  \"pageSize\": 20,\n" +
             "  \"order\": \"desc\",\n" +
             "  \"sort\":\"id\",\n" +
-            "  \"params\":{\"state\":  -1不可用;0已上传未发布;1已发布可用}\n" +
+            "  \"params\":{\"state\":  -1不可用;0已上传未发布;1已发布可用,\"nameCn\": 图层名称}\n" +
             "}",required = true)@RequestBody PageRequest pageQuery) {
         return ReturnFormat.retParam(0,tableNamesService.findPage(pageQuery));
     }
@@ -67,7 +67,7 @@ public class TableNamesController extends BaseGeoserverREST {
         return ReturnFormat.retParam(0,list);
     }*/
 
-    @PostMapping("/names")
+/*    @PostMapping("/names")
     @ApiOperation(value = "查询单个表名",notes = "查询单个表名接口,查询条件待商榷")
     public Object getTableNames(@ApiParam(name = "paramMap",value = "{\n" +
             "  \"nameCn\": \"中文名称\",\n" +
@@ -77,8 +77,8 @@ public class TableNamesController extends BaseGeoserverREST {
         String nameEn = paramMap.get("nameEn");
         TableNames tableNames = tableNamesService.getByName(nameCn,nameEn);
         return ReturnFormat.retParam(0,tableNames);
-    }
-
+    }*/
+/*
     @PostMapping("/nameCn")
     @ApiOperation(value = "查询中文名称是否存在",notes = "查询中文名称是否存在")
     public Object getByNameCn(@ApiParam(name = "paramMap",value = "{\n" +
@@ -87,87 +87,47 @@ public class TableNamesController extends BaseGeoserverREST {
         String nameCn = paramMap.get("nameCn");
         TableNames tableNames = tableNamesService.getByNameCn(nameCn);
         return ReturnFormat.retParam(0,tableNames);
-    }
-
-    /*@PostMapping()
-    @ApiOperation(value = "增加表名",notes = "新增表名接口")
-    public Object insert(@ApiParam(name = "Tablenames",value = "{\n" +
-            "  \"workspace\": \"tuban\",\n" +
-            "  \"datastore\": gis,\n" +
-            "  \"nameCn\": \"中国\",\n" +
-            "  \"nameEn\": \"china\",\n" +
-            "  \"remark\": \"remark\",\n" +
-            "  \"flag\": \"栅格:1 矢量:0\",\n" +
-            "  \"creater\": 0,\n" +
-            "}",required = true)@RequestBody TableNames t) {
-        TableNames tableNames = tableNamesService.getByName(t.getNameCn(),t.getNameEn());
-        if(tableNames!=null){
-            return ReturnFormat.retParam(2030,null);
-        }
-        t.setCreateTime(new Date());
-        t.setState(0l);
-        int i = tableNamesService.insertTableNames(t);
-        return ReturnFormat.retParam(0,t);
-
     }*/
 
-    @PutMapping()
-    @ApiOperation(value = "修改表名",notes = "修改表名接口")
-    public Object update(@ApiParam(name = "Tablenames",value = "{\n" +
-            "  \"id\": 0,\n" +
-            "  \"nameCn\": \"中国\",\n" +
-            "  \"nameEn\": \"china\",\n" +
-            "  \"workspace\": \"tuban\",\n" +
-            "  \"datastore\": gis,\n" +
-            "  \"nameCn\": \"中国\",\n" +
-            "  \"nameEn\": \"china\",\n" +
-            "  \"remark\": \"remark\",\n" +
-            "  \"flag\": \"栅格:1 矢量:0\",\n" +
-            "  \"updater\": 0\n" +
-            "  \"metadata\": JSON\n" +
-            "}",required = true)@RequestBody TableNames t) {
-        t.setUpdateTime(new Date());
-        tableNamesService.updateTableNames(t);
-        return ReturnFormat.retParam(0,null);
-    }
 
-    /*@PutMapping("/{ids}")
-    @ApiOperation(value = "作废",notes = "表名作废接口")
-    public Object updateState(@ApiParam(name = "ids",value = "ids",required = true)@PathVariable Long[] ids)  {
-        tableNamesService.updateState(ids);
-        return ReturnFormat.retParam(0,null);
-    }*/
 
     @DeleteMapping("/{ids}")
     @ApiOperation(value = "多表删除",notes = "多表删除接口")
     @Transactional
     public Object delete(@ApiParam(name = "ids",value = "ids",required = true)@PathVariable Long[] ids)  {
         List<TableNames> list = tableNamesService.getByIds(ids);
-        if(list.size()>0){
-            String names ="";
-            for (TableNames tableNames:list){
-                if(tableNames.getState()==-1){
-                    return ReturnFormat.retParam(2033,null);
-                }
-                //矢量数据删除数据库表
-                if(tableNames.getFlag()==0){
-                    names += tableNames.getNameEn()+",";
-                }
-                String metadata = tableNames.getMetadata();
-                Map map = JSON.parseObject(metadata,Map.class);
-                if(map.get("filename")!=null){
-                    String[] filenames = map.get("filename").toString().split("/");
-                    FileUtils.delAllFile(extractFilePath+filenames[0]);
-                }
+        boolean b = false;
+        for (TableNames tableNames:list){
+            //删除解压文件
+            Object metadata = tableNames.getMetadata();
+            JSONObject jsonObject = JSONObject.parseObject(metadata.toString());
+            if(jsonObject.get("filename")!=null){
+                String[] filenames = jsonObject.get("filename").toString().split("/");
+                //删除解压路径文件夹
+                FileUtils.delFolder(extractFilePath+filenames[0]);
             }
-            int i = tableNamesService.deleteTableNames(ids);
-            if(i>1){
-                names = names.substring(0, names.length()-1);
-                tableNamesService.dropTable(names);
+
+            //矢量数据删除数据库表
+            if(tableNames.getFlag()==0){
+                b = publisher.removeLayer(tableNames.getWorkspace(), tableNames.getNameEn());
+                System.out.println("删除矢量:"+tableNames.getNameEn()+","+b);
+                if(b){
+                    tableNamesService.delete(tableNames.getId());
+                    tableNamesService.dropTable(tableNames.getNameEn());
+                }else{
+                    return ReturnFormat.retParam(2033,tableNames.getNameCn());
+                }
+
+            }else{
+                b = publisher.removeCoverageStore(tableNames.getWorkspace(), tableNames.getDatastore(),true);
+                System.out.println("删除栅格:"+tableNames.getNameEn()+","+b);
+                if(b){
+                    tableNamesService.delete(tableNames.getId());
+                }else{
+                    return ReturnFormat.retParam(2033,tableNames.getNameCn());
+                }
             }
         }
-
-
         return ReturnFormat.retParam(0,null);
     }
 }

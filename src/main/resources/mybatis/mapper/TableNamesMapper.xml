@@ -7,14 +7,12 @@
 	<sql id="table">tablenames</sql>
 
 	<!-- 定义的resultMap，可以解决类的属性名和数据库列名不一致的问题-->
-	<resultMap id="tablenamesMap" type="it.geosolutions.swgeoserver.entry.TableNames">
+	<resultMap id="TableNamesMap" type="it.geosolutions.swgeoserver.entry.TableNames">
 		<id property="id" column="id" jdbcType="BIGINT"/>
 		<result property="nameCn" column="name_cn" jdbcType="VARCHAR" />
 		<result property="nameEn" column="name_en" jdbcType="VARCHAR"  />
 		<result property="workspace" column="workspace" jdbcType="VARCHAR"  />
 		<result property="datastore" column="datastore" jdbcType="VARCHAR"  />
-
-
 		<result property="state" column="state" jdbcType="BIGINT"  />
 		<result property="creater" column="creater" jdbcType="BIGINT"  />
 		<result property="createTime" column="create_time"  jdbcType="TIMESTAMP"/>
@@ -22,24 +20,12 @@
 		<result property="updateTime" column="update_time"  jdbcType="TIMESTAMP"/>
 		<result property="remark" column="remark" jdbcType="VARCHAR"  />
 		<result property="flag" column="flag" jdbcType="INTEGER"  />
-		<!--<result property="extractPath" column="extract_path" jdbcType="VARCHAR"  />
-		<result property="center" column="center" jdbcType="VARCHAR"  />
-		<result property="isPublish" column="is_publish" jdbcType="INTEGER"  />
-		<result property="md5" column="md5" jdbcType="VARCHAR"  />-->
-		<result property="metadata" column="metadata" jdbcType="VARCHAR"  />
+		<result property="metadata" column="metadata" javaType="Object" typeHandler="it.geosolutions.swgeoserver.entry.JsonTypeHandler" />
 	</resultMap>
 
-	<select id="findTableNames" parameterType="Map" resultType="TableNames">
-		select * from <include refid="table"/>
-		<trim prefix="WHERE" prefixOverrides="AND |OR ">
-			<if test="state != null">
-				AND state = #{state}
-			</if>
-		</trim>
-		order by id
-	</select>
 
-	<select id="getPage"  resultMap="tablenamesMap">
+
+	<select id="getPage"  resultMap="TableNamesMap">
 		select * from <include refid="table"/> order by id
 	</select>
 
@@ -92,7 +78,7 @@
 	<insert id="insertTableNames" parameterType="TableNames"
 			keyColumn="id" keyProperty="id" useGeneratedKeys="true" >
 		insert into <include refid="table"/>(name_cn,name_en,workspace,datastore,creater,create_time,updater,update_time,state,remark,flag,metadata)
-		values (#{nameCn},#{nameEn},#{workspace},#{datastore},#{creater},#{createTime},#{updater},#{updateTime},#{state},#{remark},#{flag},#{metadata})
+		values (#{nameCn},#{nameEn},#{workspace},#{datastore},#{creater},#{createTime},#{updater},#{updateTime},#{state},#{remark},#{flag},#{metadata,javaType=Object,jdbcType=OTHER,typeHandler=it.geosolutions.swgeoserver.entry.JsonTypeHandler})
 	</insert>
 
 	<!-- 更新 -->
@@ -114,27 +100,14 @@
 			<if test="flag!=null and flag !=''">flag=#{flag},</if>
 			<!--<if test="isPublish!=null and isPublish !=''">is_publish=#{isPublish},</if>
 			<if test="md5!=null and md5 !=''">md5=#{md5},</if>-->
-			<if test="metadata!=null and metadata !=''">metadata=#{metadata},</if>
+			<if test="metadata!=null">metadata=#{metadata,javaType=Object,jdbcType=OTHER,typeHandler=it.geosolutions.swgeoserver.entry.JsonTypeHandler},</if>
 		</trim>
 		WHERE id = #{id}
 	</update>
 
-	<!-- 作废 -->
-	<update id="updateState" parameterType="Long[]">
-		<if test="_parameter != null">
-			UPDATE <include refid="table"/> SET state = 1 ,update_time = now() where id in
-			<foreach collection="array" item="id" index="index" open="(" separator="," close=")" >
-				#{id}
-			</foreach>
-		</if>
-	</update>
-
-	<!-- 删除对照表数据 -->
-	<delete id="deleteTableNames" parameterType="Long[]">
-		delete from <include refid="table"/> where id in
-		<foreach collection="array" item="id" index="index" open="(" separator="," close=")" >
-			#{id}
-		</foreach>
+	<!-- 删除 -->
+	<delete id="delete" parameterType="Long">
+		delete from <include refid="table"/> where id = #{id}
 	</delete>
 
 	<!-- 删除数据库中表-->
@@ -143,6 +116,40 @@
 			drop table ${names}
 		</if>
 	</update>
+
+
+	<!--<select id="findTableNames" resultMap="TableNamesMap">
+		select * from <include refid="table"/>
+		&lt;!&ndash;<trim prefix="WHERE" prefixOverrides="AND |OR ">
+			<if test="state != null">
+				AND state = #{state}
+			</if>
+			<if test="nameCn != null">
+				AND name_cn = #{nameCn}
+			</if>
+		</trim>&ndash;&gt;
+		order by id
+	</select>-->
+
+	<!-- 作废
+	<update id="updateState" parameterType="Long[]">
+		<if test="_parameter != null">
+			UPDATE <include refid="table"/> SET state = 1 ,update_time = now() where id in
+			<foreach collection="array" item="id" index="index" open="(" separator="," close=")" >
+				#{id}
+			</foreach>
+		</if>
+	</update>
+	-->
+
+	<!-- 删除对照表数据
+	<delete id="deleteTableNames" parameterType="Long[]">
+		delete from <include refid="table"/> where id in
+		<foreach collection="array" item="id" index="index" open="(" separator="," close=")" >
+			#{id}
+		</foreach>
+	</delete>
+    -->
 
 </mapper>
 

@@ -1,6 +1,7 @@
 package it.geosolutions.swgeoserver.dao;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -131,22 +132,21 @@ public class SqliteDao {
 
 	/**
 	 * 查询
-	 * 
-	 * @param sql
 	 * @return
 	 */
-	public static Map executeQuery(String dbName, String sql) {
+	public static JSONObject executeQuery(String dbName) {
+		String sql = "select * from metadata";
 		Connection connection = getConnection(dbName);
 		PreparedStatement pst = getPrepStatement(connection, sql);
 		ResultSet rs = null;
 		try {
 			rs = pst.executeQuery();
 			List<Map> result = resultSetToList(rs);
-			Map map = new HashMap();
+			JSONObject jsonObject = new JSONObject();
 			for (Map res : result){
-				map.put(res.get("name"),res.get("value"));
+				jsonObject.put(res.get("name").toString(),res.get("value"));
 			}
-			return map;
+			return jsonObject;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -213,7 +213,7 @@ public class SqliteDao {
 		System.out.println("查询db文件:" +"" + "的sql : " + metadata_sql);
 		Map map = new HashMap();
 		try{
-			map =  SqliteDao.executeQuery("E:\\usr\\local\\shpfile\\siweidg_swgeoserver_apache\\extract\\quanzhou1\\quanzhou1.mbtiles", metadata_sql);
+			map =  SqliteDao.executeQuery("E:\\usr\\local\\shpfile\\siweidg_swgeoserver_apache\\extract\\quanzhou1\\quanzhou1.mbtiles");
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

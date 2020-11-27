@@ -22,11 +22,9 @@ public interface TableNamesService {
      */
     PageResult findPage(PageRequest pageRequest);
 
-    List<String> findTableName();
-
     List<TableNames> getByIds(Long[] ids);
 
-    TableNames getTableNameByNameEn(String nameEn);
+    TableNames getByNameEn(String nameEn);
 
     TableNames getByName(String nameCn,String nameEn);
 
@@ -34,14 +32,16 @@ public interface TableNamesService {
 
     int insertTableNames(TableNames tableNames);
 
-    int deleteTableNames(Long[] ids);
+    int dropTable(String names);
+
+    int delete(Long ids);
 
     int updateTableNames(TableNames tableNames);
 
-    int updateState(Long[] ids);
+   /* int deleteTableNames(Long[] ids);
+    List<String> findTableName();
+    int updateState(Long[] ids);*/
 
-    int dropTable(String names);
 
-//    TableNames getByEn(String nameEn);
 
 }

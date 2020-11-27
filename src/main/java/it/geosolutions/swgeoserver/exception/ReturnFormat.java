@@ -43,10 +43,11 @@ public class ReturnFormat {
 		messageMap.put("2023", "请重新登录");
 		messageMap.put("2024", "历史信息保存失败");
 		messageMap.put("2029", "参数不合法");
-		messageMap.put("2030", "表已经存在");
+
+		messageMap.put("2030", "数据已存在");
 		messageMap.put("2031", "上传文件过大");
-		messageMap.put("2032", "表不存在");
-		messageMap.put("2033", "不能删除工作数据");
+		messageMap.put("2032", "中文名称已存在");
+		messageMap.put("2033", "删除图层失败");
 
 		messageMap.put("3001", "有数据");
 		messageMap.put("3002", "没有数据");
@@ -58,7 +59,7 @@ public class ReturnFormat {
 		messageMap.put("4000", "工作区已存在!");
 		messageMap.put("4001", "数据存储已存在!");
 		messageMap.put("4002", "图层已存在!");
-		messageMap.put("4003", "数据不存在!");
+		messageMap.put("4003", "图层不存在!");
 
 		messageMap.put("9000", "用户名或是密码错误");
 		messageMap.put("9001", "不能同时执行多个任务");

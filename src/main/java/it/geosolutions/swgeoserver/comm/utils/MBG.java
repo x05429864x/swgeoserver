@@ -1,9 +1,11 @@
 package it.geosolutions.swgeoserver.comm.utils;
 
 import org.mybatis.generator.api.MyBatisGenerator;
+import org.mybatis.generator.api.ShellRunner;
 import org.mybatis.generator.config.Configuration;
 import org.mybatis.generator.config.xml.ConfigurationParser;
 import org.mybatis.generator.internal.DefaultShellCallback;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,14 +19,9 @@ import java.util.List;
  * \
  */
 public class MBG {
-    public static void main(String[] args) throws Exception {
-        List<String> warnings = new ArrayList<String>();
-        boolean overwrite = true;
-        File configFile = new File("mybatis-generator.xml");//直接放在文件下面，与pom.xml同级
-        ConfigurationParser cp = new ConfigurationParser(warnings);
-        Configuration config = cp.parseConfiguration(configFile);
-        DefaultShellCallback callback = new DefaultShellCallback(overwrite);
-        MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config, callback, warnings);
-        myBatisGenerator.generate(null);
+    //该配置文件放在src\\main\\resources\\该路径下即可
+    public static void main(String[] args) {
+        args = new String[] { "-configfile", "src\\main\\resources\\mybatis-generator.xml", "-overwrite" };
+        ShellRunner.main(args);
     }
 }

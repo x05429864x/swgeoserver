@@ -1,5 +1,6 @@
 package it.geosolutions.swgeoserver.service.serviceImpl;
 
+import it.geosolutions.swgeoserver.comm.utils.FileUtils;
 import it.geosolutions.swgeoserver.comm.utils.Logger;
 import it.geosolutions.swgeoserver.comm.utils.ShpReadUtils;
 import it.geosolutions.swgeoserver.dao.UploadFileMapper;
@@ -41,7 +42,7 @@ public class UploadFileServiceImpl implements UploadFileService {
         String code = "GBK";
         for(File f : files){
             if(f.isDirectory()) {
-//                saveTable(shpPath,tableName,flag);
+                readShp2List(shpPath, tableName);
             } else {
                 if(f.getName().endsWith(".shp")) {
                     String fName = f.getName().substring(0,f.getName().length()-3);
@@ -54,6 +55,7 @@ public class UploadFileServiceImpl implements UploadFileService {
                 }
             }
         }
+//        file.delete();
         return list;
     }
 
@@ -87,6 +89,11 @@ public class UploadFileServiceImpl implements UploadFileService {
         tablesEntity.setValueList(valueList);
         int flag = uploadFileMapper.saveData(tablesEntity);
         return flag;
+    }
+
+    @Override
+    public int truncateTable(String tableName) {
+        return uploadFileMapper.truncateTable(tableName);
     }
 
 }

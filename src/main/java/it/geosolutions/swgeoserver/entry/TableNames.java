@@ -1,5 +1,7 @@
 package it.geosolutions.swgeoserver.entry;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -27,12 +29,6 @@ public class TableNames implements Serializable {
     @ApiModelProperty(value = "存储",dataType = "String")
     private String datastore;
 
-    /*@ApiModelProperty(value = "中心点",dataType = "String")
-    private String center;*/
-
-   /* @ApiModelProperty(value = "解压路径",dataType = "String")
-    private String extractPath;*/
-
     @ApiModelProperty(value = "创建人",dataType = "long")
     private Long creater;
 
@@ -54,14 +50,8 @@ public class TableNames implements Serializable {
     @ApiModelProperty(value = "矢量/栅格",dataType = "Integer",example = "0:矢量,1:栅格")
     private Integer flag;
 
-  /*  @ApiModelProperty(value = "是否发布",dataType = "Integer",example = "0:未发布 1:已发布")
-    private Long isPublish;*/
-
-    /*@ApiModelProperty(value = "md5",dataType = "String")
-    private String md5;*/
-
-    @ApiModelProperty(value = "metadata",dataType = "String")
-    private String metadata;
+    @ApiModelProperty(value = "metadata",dataType = "OTHER")
+    private Object  metadata;
 
     public Long getId() {
         return Id;
@@ -159,11 +149,11 @@ public class TableNames implements Serializable {
         this.datastore = datastore;
     }
 
-    public String getMetadata() {
+    public Object  getMetadata() {
         return metadata;
     }
 
-    public void setMetadata(String metadata) {
+    public void setMetadata(Object  metadata) {
         this.metadata = metadata;
     }
 }

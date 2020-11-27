@@ -1,15 +1,16 @@
 package it.geosolutions.swgeoserver.controller;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.geosolutions.swgeoserver.comm.base.BaseGeoserverREST;
-import it.geosolutions.swgeoserver.comm.utils.SNUtil;
 import it.geosolutions.swgeoserver.entry.TableNames;
 import it.geosolutions.swgeoserver.exception.ReturnFormat;
-import it.geosolutions.swgeoserver.rest.decoder.*;
-import it.geosolutions.swgeoserver.rest.decoder.utils.NameLinkElem;
+import it.geosolutions.swgeoserver.rest.decoder.RESTBoundingBox;
+import it.geosolutions.swgeoserver.rest.decoder.RESTCoverage;
+import it.geosolutions.swgeoserver.rest.decoder.RESTFeatureType;
+import it.geosolutions.swgeoserver.rest.decoder.RESTLayer;
 import it.geosolutions.swgeoserver.rest.encoder.GSLayerEncoder;
 import it.geosolutions.swgeoserver.rest.encoder.feature.GSFeatureTypeEncoder;
 import it.geosolutions.swgeoserver.service.TableNamesService;
@@ -20,7 +21,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 
 @CrossOrigin
@@ -39,11 +43,12 @@ public class LayerController extends BaseGeoserverREST {
     private TableNamesService tableNamesService;
 
 
-    @GetMapping(value = "/{workspace}/{layerName}")
+
+/*@GetMapping(value = "/{workspace}/{layerName}")
     @ApiOperation(value = "查询图层",notes = "图层详情")
     public Object getLayer(@ApiParam(name = "workspace",value = "工作区名称",required = true) @PathVariable String workspace,
                            @ApiParam(name = "layerName",value = "图层名称",required = true) @PathVariable String layerName){
-        TableNames tableNames = tableNamesService.getTableNameByNameEn(layerName);
+        TableNames tableNames = tableNamesService.getByNameEn(layerName);
         if("".equals(tableNames.getNameCn())){
             return ReturnFormat.retParam(4003,null);
         }
@@ -67,9 +72,11 @@ public class LayerController extends BaseGeoserverREST {
         }else{
             return ReturnFormat.retParam(4003,null);
         }
-    }
+    }*//*
 
-    @GetMapping(value = "/layers")
+
+   */
+/* @GetMapping(value = "/layers")
     @ApiOperation(value = "图层列表",notes = "图层列表")
     public Object getLayers(){
         List allList = new ArrayList();
@@ -88,7 +95,7 @@ public class LayerController extends BaseGeoserverREST {
                 center.append((nativeBoundingBox.getMinX()+nativeBoundingBox.getMaxX())/2)
                         .append(",")
                         .append((nativeBoundingBox.getMinY()+nativeBoundingBox.getMaxY())/2);
-                TableNames tableNames = tableNamesService.getTableNameByNameEn(layerName);
+                TableNames tableNames = tableNamesService.getByNameEn(layerName);
                 if(tableNames!=null){
                     map.put("id",tableNames.getId());
                     map.put("layerName_CN",tableNames.getNameCn());
@@ -104,7 +111,7 @@ public class LayerController extends BaseGeoserverREST {
                 center.append((nativeBoundingBox.getMinX()+nativeBoundingBox.getMaxX())/2)
                         .append(",")
                         .append((nativeBoundingBox.getMinY()+nativeBoundingBox.getMaxY())/2);
-                TableNames tableNames = tableNamesService.getTableNameByNameEn(layerName);
+                TableNames tableNames = tableNamesService.getByNameEn(layerName);
                 map.put("id",tableNames.getId());
                 map.put("layerName_CN",tableNames.getNameCn());
                 map.put("layerName_EN",workspace+":"+layerName);
@@ -114,14 +121,17 @@ public class LayerController extends BaseGeoserverREST {
             }
         }
         return ReturnFormat.retParam(0,allList);
-    }
+    }*//*
 
 
-    /**
+
+    */
+/**
      * 发布图层PostGis
      * @param paramMap
      * @return
      */
+
     @PostMapping(value = "/publishGis")
     @ApiOperation(value = "发布PostGIS Database",notes = "查询列表")
     @Transactional
@@ -146,7 +156,7 @@ public class LayerController extends BaseGeoserverREST {
                 pds.setName(layerName);
                 pds.setSRS("EPSG:4326");
                 GSLayerEncoder layerEncoder = new GSLayerEncoder();
-                if(null != style){
+                if(!"".equalsIgnoreCase(style)){
                     layerEncoder.setDefaultStyle(style);
                 }
                 boolean publish = manager.getPublisher().publishDBLayer(ws, store_name,  pds, layerEncoder);
@@ -168,15 +178,15 @@ public class LayerController extends BaseGeoserverREST {
                 StringBuffer bbox = new StringBuffer("");
                 bbox.append(nativeBoundingBox.getMinX()+",").append(nativeBoundingBox.getMinY()+",").append(nativeBoundingBox.getMaxX()+",").append(nativeBoundingBox.getMaxY()+"");
 
-                TableNames tableNames = tableNamesService.getTableNameByNameEn(layerName);
-                String metadata = tableNames.getMetadata();
-                Map map = JSON.parseObject(metadata,Map.class);
-                map.put("center",center);
-                map.put("bounds",bbox);
-                String json = JSON.toJSONString(map);
+                TableNames tableNames = tableNamesService.getByNameEn(layerName);
+                Object metadata = tableNames.getMetadata();
+                JSONObject jsonObject = JSONObject.parseObject(metadata.toString());
+                jsonObject.put("center",center);
+                jsonObject.put("bounds",bbox);
+//                String json = JSON.toJSONString(map);
                 tableNames.setState(1l);
                 tableNames.setCreateTime(new Date());
-                tableNames.setMetadata(json);
+                tableNames.setMetadata(jsonObject);
                 tableNamesService.updateTableNames(tableNames);
                 return ReturnFormat.retParam(0,tableNames);
             }else {
@@ -189,18 +199,97 @@ public class LayerController extends BaseGeoserverREST {
         }
     }
 
-    /**
+
+/**
+     * 变更图层
+     * @param paramMap
+     * @return
+     */
+
+    @PostMapping(value = "/updateLayer")
+    @ApiOperation(value = "变更图层",notes = "变更图层")
+    @Transactional
+    public Object updateLayer(@ApiParam(name = "paramMap",value = "{\n" +
+            "  \"workspace\": \"工作区\",\n" +
+            "  \"nameCn\": \"中文名称\",\n" +
+            "  \"nameEn\":\"英文名称\"\n" +
+            "  \"style\":\"样式\"\n" +
+            "}",required = true)@RequestBody(required = true) Map<String, String> paramMap){
+        String ws = paramMap.get("workspace");
+        String style = paramMap.get("style");
+//        String store_name =  "gis";
+        String layerName = paramMap.get("nameEn");
+        String layerNameCn = paramMap.get("nameCn");
+        List allList = new ArrayList();
+        //判断图层是否已经存在，不存在则创建并发布
+        try{
+            RESTLayer layer = manager.getReader().getLayer(ws, layerName);
+            if(layer == null){
+                System.out.println("图层不存在:" + layerName);
+                return ReturnFormat.retParam(4003,null);
+            }else {
+                TableNames t = tableNamesService.getByNameCn(layerNameCn);
+                if(t!=null){
+                    return ReturnFormat.retParam(2032,t);
+                }
+                GSLayerEncoder layerEncoder = new GSLayerEncoder();
+                if(null != style){
+                    layerEncoder.setDefaultStyle(style);
+                }
+                boolean publish = manager.getPublisher().configureLayer(ws, layerName, layerEncoder);
+                System.out.println("publish : " + publish);
+                layer = reader.getLayer(ws, layerName);
+                RESTFeatureType featureType = reader.getFeatureType(layer);
+                String crs = featureType.getCRS();
+
+                StringBuffer center = new StringBuffer("");
+                RESTBoundingBox nativeBoundingBox = featureType.getLatLonBoundingBox();
+                BigDecimal getMinX=new BigDecimal(nativeBoundingBox.getMinX()+"");
+                BigDecimal getMinY=new BigDecimal(nativeBoundingBox.getMinY()+"");
+                BigDecimal getMaxX=new BigDecimal(nativeBoundingBox.getMaxX()+"");
+                BigDecimal getMaxY=new BigDecimal(nativeBoundingBox.getMaxY()+"");
+                BigDecimal x = (getMinX.add(getMaxX)).divide(new BigDecimal(2));
+                BigDecimal y = (getMinY.add(getMaxY)).divide(new BigDecimal(2));
+                center.append(x+","+y);
+
+                StringBuffer bbox = new StringBuffer("");
+                bbox.append(nativeBoundingBox.getMinX()+",").append(nativeBoundingBox.getMinY()+",").append(nativeBoundingBox.getMaxX()+",").append(nativeBoundingBox.getMaxY()+"");
+
+                TableNames tableNames = tableNamesService.getByNameEn(layerName);
+                Object metadata = tableNames.getMetadata();
+                JSONObject jsonObject = JSONObject.parseObject(metadata.toString());
+//                Map map = JSON.parseObject(metadata,Map.class);
+                jsonObject.put("center",center);
+                jsonObject.put("bounds",bbox);
+//                String json = JSON.toJSONString(map);
+                tableNames.setState(1l);
+                tableNames.setNameCn(layerNameCn);
+                tableNames.setUpdateTime(new Date());
+                tableNames.setMetadata(jsonObject);
+                tableNamesService.updateTableNames(tableNames);
+                return ReturnFormat.retParam(0,tableNames);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return ReturnFormat.retParam(1000,allList);
+        }
+    }
+
+
+/**
      * 发布图层MBTiles
      * @return
      */
+
     @RequestMapping(value = "/publishMBTiles", produces = "application/json;charset=UTF-8", method = RequestMethod.POST)
     @ApiOperation(value = "发布MBTiles",notes = "发布MBTiles")
     @Transactional
     public Object publishMBTiles(@ApiParam(name = "paramMap",value = "{\n" +
             "  \"workspace\": \"工作区\",\n" +
-            "  \"datastore\":\"数据存储\"\n" +
-            "  \"nameEn\":\"英文名称\"\n" +
-            "}",required = true)@RequestBody(required = true) Map<String, String> paramMap){
+            "  \"datastore\":\"数据存储\",\n" +
+            "  \"nameEn\":\"英文名称\",\n" +
+            "  \"path\":\"路径\"\n}"
+            ,required = true)@RequestBody(required = true) Map<String, String> paramMap){
         try{
             String workspace = paramMap.get("workspace");
             String store_name = paramMap.get("datastore");
@@ -211,7 +300,8 @@ public class LayerController extends BaseGeoserverREST {
             RESTLayer layer = manager.getReader().getLayer(workspace, layerName);
             if(layer == null){
                 boolean publish = publisher.publishGeoMBTILES(workspace, store_name,store_name, file);
-                TableNames tableNames = tableNamesService.getTableNameByNameEn(layerName);
+                logger.info("mbtile发布"+publish);
+                TableNames tableNames = tableNamesService.getByNameEn(layerName);
                 tableNames.setState(1l);
                 tableNames.setCreateTime(new Date());
                 tableNamesService.updateTableNames(tableNames);
@@ -227,10 +317,12 @@ public class LayerController extends BaseGeoserverREST {
 
     }
 
-    /**
+
+/**
      * 发布图层Tif
      * @return
      */
+
     @RequestMapping(value = "/publishTif", produces = "application/json;charset=UTF-8", method = RequestMethod.POST)
     @ApiOperation(value = "发布Tif",notes = "发布Tif")
     @Transactional
@@ -265,15 +357,16 @@ public class LayerController extends BaseGeoserverREST {
                 StringBuffer bbox = new StringBuffer("");
                 bbox.append(nativeBoundingBox.getMinX()+",").append(nativeBoundingBox.getMinY()+",").append(nativeBoundingBox.getMaxX()+",").append(nativeBoundingBox.getMaxY()+"");
 
-                TableNames tableNames = tableNamesService.getTableNameByNameEn(layerName);
-                String metadata = tableNames.getMetadata();
-                Map map = JSON.parseObject(metadata,Map.class);
-                map.put("center",center);
-                map.put("bounds",bbox);
-                String json = JSON.toJSONString(map);
+                TableNames tableNames = tableNamesService.getByNameEn(layerName);
+                Object metadata = tableNames.getMetadata();
+                JSONObject jsonObject = JSONObject.parseObject(metadata.toString());
+//                Map map = JSON.parseObject(metadata,Map.class);
+                jsonObject.put("center",center);
+                jsonObject.put("bounds",bbox);
+//                String json = JSON.toJSONString(map);
                 tableNames.setState(1l);
                 tableNames.setCreateTime(new Date());
-                tableNames.setMetadata(json);
+                tableNames.setMetadata(jsonObject);
                 tableNamesService.updateTableNames(tableNames);
                 return ReturnFormat.retParam(0,tableNames);
             }else {
@@ -287,21 +380,5 @@ public class LayerController extends BaseGeoserverREST {
 
     }
 
-    /**
-     * 删除CoverageStore
-     * @param paramMap
-     * @return
-     */
-    @DeleteMapping(value = "/removeCoverageStore")
-    @ApiOperation(value = "删除栅格图层",notes = "删除栅格图层")
-    public Object removeLayer(@ApiParam(name = "paramMap",value = "{\n" +
-            "  \"nameCn\": \"中文名称\",\n" +
-            "  \"nameEn\":\"英文名称\"\n" +
-            "}",required = true)@RequestBody(required = true) Map<String, String> paramMap){
-        String ws = paramMap.get("workspace");
-        String layername = paramMap.get("nameEn");
-        publisher.removeCoverageStore(ws, layername,true);
-        return ReturnFormat.retParam(0,null);
-    }
-
 }
+

@@ -334,7 +334,6 @@ public class FileUtils {
 	/**
 	 * 获取路径下的shp文件名
 	 * @param directoryPath 需要遍历的文件夹路径
-	 * @param isAddDirectory 是否将子文件夹的路径也添加到list集合中
 	 * @return
 	 */
 	public static String getShpFileName(String directoryPath) {

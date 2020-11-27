@@ -11,9 +11,12 @@ app:
 ---
 upload_file_path: /usr/local/shpfile/siweidg_swgeoserver_apache/upload/
 upload_extract_path: /usr/local/shpfile/siweidg_swgeoserver_apache/extract/
+geoserver_style_path: /usr/local/shpfile/siweidg_swgeoserver_apache/style/
+image_path: /usr/local/shpfile/siweidg_swgeoserver_apache/image/
 
 ---
 mybatis:
+  type-handlers-package: it.geosolutions.swgeoserver.entry.JsonTypeHandler
   config-location: classpath:mybatis/mybatis.cfg.xml        # mybatis配置文件所在路径
   type-aliases-package: it.geosolutions.swgeoserver.entry    # 所有Entity别名类所在包
   mapper-locations:

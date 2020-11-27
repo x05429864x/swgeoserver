@@ -2557,9 +2557,15 @@ public class GeoServerRESTPublisher {
             return false;
         }
 
-        final String url = restURL + "/rest/layers/" + fqLayerName;
+//        final String url = restURL + "/rest/layers/" + fqLayerName;
+//        url += url+"?recurse=true";
+        StringBuilder url = HTTPUtils.append(restURL,"/rest/workspaces/",workspace,"/", "layers", "/",layerName);
+//                new StringBuffer(restURL).append("/rest/workspaces/").append(
+//                workspace);
+//        if (recurse)
+            url.append("?recurse=true");
 
-        boolean result = HTTPUtils.delete(url, gsuser, gspass);
+        boolean result = HTTPUtils.delete(url.toString(), gsuser, gspass);
         if (result) {
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info("Layer successfully removed: " + fqLayerName);

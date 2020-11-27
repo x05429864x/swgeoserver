@@ -16,4 +16,6 @@ public interface UploadFileService {
 
     int saveData(List<Map<String, Object>> list,String tableName);
 
+    int truncateTable(String tableName);
+
 }

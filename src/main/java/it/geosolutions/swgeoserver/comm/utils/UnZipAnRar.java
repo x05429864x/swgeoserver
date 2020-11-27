@@ -26,7 +26,7 @@ public class UnZipAnRar {
             }
         }
 
-        ZipFile zip = new ZipFile(zipFile);
+        ZipFile zip = new ZipFile(zipFile,"GBK");
         for (Enumeration enumeration = zip.getEntries(); enumeration.hasMoreElements(); ) {
             ZipEntry entry = (ZipEntry) enumeration.nextElement();
             String zipEntryName = entry.getName();
@@ -38,7 +38,7 @@ public class UnZipAnRar {
                 continue;
             }
 
-            File file = new File(outDir, zipEntryName);
+            File file = new File(outDir+"/", zipEntryName);
             file.createNewFile();
             OutputStream out = new FileOutputStream(file);
             byte[] buff = new byte[1024];
@@ -49,6 +49,8 @@ public class UnZipAnRar {
             in.close();
             out.close();
         }
+        zip.close();
+        zipFile.delete();
     }
 
     public static void unRar(File rarFile, String outDir) throws Exception {
@@ -66,7 +68,7 @@ public class UnZipAnRar {
                 fileHeader = archive.nextFileHeader();
                 continue;
             }
-            File out = new File(outDir + fileHeader.getFileNameString());
+            File out = new File(outDir + "/" + fileHeader.getFileNameString());
             if (!out.exists()) {
                 if (!out.getParentFile().exists()) {
                     out.getParentFile().mkdirs();

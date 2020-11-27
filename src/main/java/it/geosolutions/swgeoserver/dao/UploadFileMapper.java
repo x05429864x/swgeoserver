@@ -15,4 +15,6 @@ public interface UploadFileMapper {
     List<Map<String,String>> executeReMap(@Param(value="sql") String sql);
 
     int saveData(TablesEntity le);
+
+    int truncateTable(@Param(value="tableName") String tableName);
 }
