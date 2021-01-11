@@ -11,16 +11,10 @@ import java.util.Map;
 public interface TableNamesMapper {
 
     /**
-     * 查询全部用户
+     * 分页查询
      * @return
      */
     List<TableNames> findTableNames(Map paramMap);
-
-    /**
-     * 分页查询用户
-     * @return
-     */
-    List<TableNames> getPage();
 
     List<TableNames> getByIds(Long[] ids);
 
@@ -38,6 +32,7 @@ public interface TableNamesMapper {
 
     int dropTable(@Param("names")String names);
 
+    String getExtent(@Param("taskId")int taskId);
     /*int deleteTableNames(Long[] ids);
     List<String> findTableName();
     int updateState(Long[] ids);*/

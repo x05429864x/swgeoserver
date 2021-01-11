@@ -1,12 +1,14 @@
 package it.geosolutions.swgeoserver.comm.utils;
 
 
-import com.sun.istack.internal.NotNull;
+
 import it.geosolutions.swgeoserver.comm.init.Constants;
 import org.apache.log4j.Logger;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.postgis.PostgisNGDataStoreFactory;
+import org.geotools.jdbc.JDBCDataStore;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -66,7 +68,9 @@ public class PGDatastore {
         PGDatastore.logger = logger;
     }
 
-    public static DataStore getDefeaultDatastore() {
+    public static JDBCDataStore getDefeaultDatastore() {
+        JDBCDataStore ds=null;
+        DataStore dataStore=null;
         if (dataStore == null) {
             Map<String, Object> params = new HashMap<String, Object>();
             params.put(PostgisNGDataStoreFactory.DBTYPE.key, Constants.DBTYPE);
@@ -78,11 +82,23 @@ public class PGDatastore {
             params.put(PostgisNGDataStoreFactory.PASSWD.key, Constants.PG_PWD);
             try {
                 dataStore = DataStoreFinder.getDataStore(params);
+
+                if (dataStore != null) {
+                    ds = (JDBCDataStore) dataStore;
+                    System.out.println("连接成功");
+                } else {
+
+                    System.out.println("连接失败");
+                }
+
             } catch (IOException e) {
-                logger.error("默认Postgis数据库连接失败", e);
+                // TODO Auto-generated catch block
+
+                e.printStackTrace();
+
             }
         }
-        return dataStore;
+        return ds;
     }
 
     public String getHost() {

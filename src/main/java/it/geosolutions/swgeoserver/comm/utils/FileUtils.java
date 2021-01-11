@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -383,9 +384,72 @@ public class FileUtils {
         return list;
     }
 
-	public static void main(String[] args) {
-        List<String> allFile = readMBTiles("E:\\usr\\local\\shpfile\\siweidg_swgeoserver_apache\\extract\\quanzhou1", false);
-        System.out.println(allFile.toString());
-    }
+	/**
+	 * file.length()转换保留两位小数
+	 */
+	public static String fileSizeConverDouble(long fileS)
+	{
+		DecimalFormat df = new DecimalFormat("#.00");
+		String fileSizeString = "";
+		String wrongSize="0B";
+		if(fileS==0){
+			return wrongSize;
+		}
+		if (fileS < 1024){
+			fileSizeString = df.format((double) fileS) + "B";
+		}
+		else if (fileS < 1048576){
+			fileSizeString = df.format((double) fileS / 1024) + "KB";
+		}
+		else if (fileS < 1073741824){
+			fileSizeString = df.format((double) fileS / 1048576) + "MB";
+		}
+		else{
+			fileSizeString = df.format((double) fileS / 1073741824) + "GB";
+		}
+		return fileSizeString;
+	}
 
+	/**
+	 * file.length()转换
+	 */
+	public static String fileSizeConver(long size) {
+		DecimalFormat df=new DecimalFormat("0.00");
+		//如果字节数少于1024，则直接以B为单位
+		if (size < 1024) {
+			return String.valueOf(df.format(size)) + "B";
+		} else {
+			size = size / 1024;
+		}
+		//如果原字节数除于1024之后，少于1024，则可以直接以KB作为单位
+		if (size < 1024) {
+			return String.valueOf(size) + "KB";
+		} else {
+			size = size / 1024;
+		}
+		if (size < 1024) {
+			//因为如果以MB为单位的话，要保留最后1位小数，
+			//因此，把此数乘以100之后再取余
+			size = size * 100;
+			return String.valueOf((size / 100)) + "."
+					+ String.valueOf((size % 100)) + "MB";
+		} else {
+			//否则如果要以GB为单位的，先除于1024再作同样的处理
+			size = size * 100 / 1024;
+			return String.valueOf((size / 100)) + "." + String.valueOf((size % 100)) + "GB";
+		}
+	}
+
+	public static void main(String[] args) {
+//        List<String> allFile = readMBTiles("E:\\usr\\local\\shpfile\\siweidg_swgeoserver_apache\\extract\\quanzhou1", false);
+//        System.out.println(allFile.toString());
+//		System.out.println(fileSizeConver(4613734));
+		System.out.println(fileSizeConver(200000));
+		System.out.println(fileSizeConverDouble(200000));
+		System.out.println(fileSizeConver(200000000));
+		System.out.println(fileSizeConverDouble(200000000));
+		System.out.println(fileSizeConver(22334668));
+		System.out.println(fileSizeConverDouble(22334668));
+
+	}
 }

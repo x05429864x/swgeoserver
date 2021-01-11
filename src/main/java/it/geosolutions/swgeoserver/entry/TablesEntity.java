@@ -28,7 +28,7 @@ public class TablesEntity implements Serializable {
 	/**
 	 * 值集合
 	 */
-	public List<String> valueList;
+	public List<Object> valueList;
 
 	/**
 	 * 更新时用到的 格式是: KEY = VALUE
@@ -120,11 +120,11 @@ public class TablesEntity implements Serializable {
 		this.columnList = columnList;
 	}
 
-	public List<String> getValueList() {
+	public List<Object> getValueList() {
 		return valueList;
 	}
 
-	public void setValueList(List<String> valueList) {
+	public void setValueList(List<Object> valueList) {
 		this.valueList = valueList;
 	}
 

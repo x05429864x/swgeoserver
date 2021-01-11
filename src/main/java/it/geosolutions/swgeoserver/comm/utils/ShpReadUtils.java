@@ -473,7 +473,7 @@ public class ShpReadUtils {
 	 * @param path 
 	 * @return 
 	 */  
-	public static List<Map<String, Object>> readSHP(String path,String code) {
+	public static List<Map<Object, Object>> readSHP(String path,String code) {
 	    ShapefileDataStore shpDataStore = null;  
 	    try {  
 	        shpDataStore = new ShapefileDataStore(new File(path).toURI().toURL());  
@@ -491,43 +491,43 @@ public class ShpReadUtils {
 	         * DataUtilities.reader(result); while(reader.hasNext()){ 
 	         * SimpleFeature feature = (SimpleFeature) reader.next(); } 
 	         */  
-	        List<Map<String,Object>> dataList = new ArrayList<Map<String,Object>>();
+	        List<Map<Object,Object>> dataList = new ArrayList<Map<Object,Object>>();
 	        while (itertor.hasNext()) {  
 	            SimpleFeature feature = itertor.next();  
-	            Map<String,Object> data = new HashMap<String, Object>();
+	            Map<Object,Object> data = new HashMap<Object, Object>();
 	            Map<String,Object> info1 = new HashMap<String, Object>();
 	            Map<String,Object> info2 = new HashMap<String, Object>();
 	            for (AttributeDescriptor attributeDes : columns) {
 	            	String attributeName = attributeDes.getName().toString();
 	            	Object attribute = feature.getAttribute(attributeName);
+	            	if(attribute!=null){
 						if(attribute.toString().contains("'")){
 							attribute = attribute.toString().replace("'","''");
 						}
-
-						if(!attributeName.equalsIgnoreCase("gid")){
-							if(attributeName.equalsIgnoreCase("postpha")){
-								info1.put(attributeName,attribute);
-							} else if(attributeName.equalsIgnoreCase("forwardcla")){
-								info1.put(attributeName,attribute);
-							} else if(attributeName.equalsIgnoreCase("picturefir")){
-								info1.put(attributeName,attribute);
-							} else if(attributeName.equalsIgnoreCase("picdesfirs")){
-								info1.put(attributeName,attribute);
-							} else if(attributeName.equalsIgnoreCase("forwardpha")){
-								info2.put(attributeName,attribute);
-							} else if(attributeName.equalsIgnoreCase("postcalss")){
-								info2.put(attributeName,attribute);
-							} else if(attributeName.equalsIgnoreCase("picturesec")){
-								info2.put(attributeName,attribute);
-							} else if(attributeName.equalsIgnoreCase("picdesseco")){
-								info2.put(attributeName,attribute);
-							} else {
-								data.put(attributeName, attribute);
-							}
+					}
+					if(!attributeName.equalsIgnoreCase("gid")){
+						if(attributeName.equalsIgnoreCase("postpha")){
+							info1.put(attributeName,attribute);
+						} else if(attributeName.equalsIgnoreCase("forwardcla")){
+							info1.put(attributeName,attribute);
+						} else if(attributeName.equalsIgnoreCase("picturefir")){
+							info1.put(attributeName,attribute);
+						} else if(attributeName.equalsIgnoreCase("picdesfirs")){
+							info1.put(attributeName,attribute);
+						} else if(attributeName.equalsIgnoreCase("forwardpha")){
+							info2.put(attributeName,attribute);
+						} else if(attributeName.equalsIgnoreCase("postcalss")){
+							info2.put(attributeName,attribute);
+						} else if(attributeName.equalsIgnoreCase("picturesec")){
+							info2.put(attributeName,attribute);
+						} else if(attributeName.equalsIgnoreCase("picdesseco")){
+							info2.put(attributeName,attribute);
+						} else if(attributeName.equalsIgnoreCase("the_geom")||attributeName.equalsIgnoreCase("geom")){
+							data.put(attributeName, "SRID=4326;"+attribute);
+						}else{
+							data.put(attributeName, attribute);
 						}
-
-
-
+					}
 	            }
 	            if(info1.size()>0&&info2.size()>0){
 					String json1 = JSON.toJSONString(info1);

@@ -1,14 +1,12 @@
 package it.geosolutions.swgeoserver.entry;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Date;
 
-@ApiModel(value="表名对照类",description="表名")
+@ApiModel(value="图层对照",description="图层对照表")
 public class TableNames implements Serializable {
 
 
@@ -51,7 +49,13 @@ public class TableNames implements Serializable {
     private Integer flag;
 
     @ApiModelProperty(value = "metadata",dataType = "OTHER")
-    private Object  metadata;
+    private Object metadata;
+
+    @ApiModelProperty(value = "style",dataType = "style")
+    private Style style;
+
+    @ApiModelProperty(value = "styleId",dataType = "long")
+    private Long styleId;
 
     public Long getId() {
         return Id;
@@ -155,5 +159,21 @@ public class TableNames implements Serializable {
 
     public void setMetadata(Object  metadata) {
         this.metadata = metadata;
+    }
+
+    public Style getStyle() {
+        return style;
+    }
+
+    public void setStyle(Style style) {
+        this.style = style;
+    }
+
+    public Long getStyleId() {
+        return styleId;
+    }
+
+    public void setStyleId(Long styleId) {
+        this.styleId = styleId;
     }
 }

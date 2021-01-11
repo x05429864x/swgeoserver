@@ -3,7 +3,7 @@ server:
     context-path: /swgeoserver
   tomcat:
     uri-encoding: utf-8
-  port: 8084
+  port: 8085
 ---
 app:
   evniroment: dev

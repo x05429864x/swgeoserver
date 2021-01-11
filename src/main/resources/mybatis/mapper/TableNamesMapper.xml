@@ -21,13 +21,22 @@
 		<result property="remark" column="remark" jdbcType="VARCHAR"  />
 		<result property="flag" column="flag" jdbcType="INTEGER"  />
 		<result property="metadata" column="metadata" javaType="Object" typeHandler="it.geosolutions.swgeoserver.entry.JsonTypeHandler" />
+		<!-- 关联对象 -->
+		<association property="style" javaType="it.geosolutions.swgeoserver.entry.Style">
+			<!-- 关联条件Tablenames的style_id对应着Style的id -->
+			<id column="styleId" property="styleId"/>
+			<result column="styleNameCn" property="styleNameCn"/>
+			<result column="styleNameEn" property="styleNameEn"/>
+			<!--<result column="sWorkspace" property="corkspace"/>
+			<result column="sCreater" property="creater"/>
+			<result column="sCreateTime" property="createTime"/>
+			<result column="sRemark" property="remark"/>
+			<result column="sFlag" property="flag"/>-->
+		</association>
 	</resultMap>
 
 
 
-	<select id="getPage"  resultMap="TableNamesMap">
-		select * from <include refid="table"/> order by id
-	</select>
 
 	<select id="getByIds" resultType="TableNames" >
 		select * from <include refid="table"/> where id in
@@ -69,11 +78,6 @@
 		order by id
 	</select>
 
-	<!-- 查询数据库中已经导入的表名 -->
-	<select id="findTableName" resultType="java.lang.String">
-		SELECT tablename FROM pg_tables	WHERE tablename NOT LIKE 'pg%' AND tablename NOT LIKE 'sql_%' and tablename not like '%tablenames%' and schemaname = 'public'
-	</select>
-
 	<!-- 新增 -->
 	<insert id="insertTableNames" parameterType="TableNames"
 			keyColumn="id" keyProperty="id" useGeneratedKeys="true" >
@@ -89,8 +93,6 @@
 			<if test="nameEn!=null and nameEn !=''">name_en=#{nameEn},</if>
 			<if test="workspace!=null and workspace !=''">workspace=#{workspace},</if>
 			<if test="datastore!=null and datastore !=''">datastore=#{datastore},</if>
-			<!--<if test="center!=null">center=#{center},</if>
-			<if test="extractPath!=null and extractPath !=''">extract_path=#{extractPath},</if>-->
 			<if test="creater!=null">creater=#{creater},</if>
 			<if test="createTime!=null">create_time=#{createTime},</if>
 			<if test="updater!=null and updater !=''">updater=#{updater},</if>
@@ -98,9 +100,8 @@
 			<if test="state!=null and state !=''">state=#{state},</if>
 			<if test="remark!=null and remark !=''">remark=#{remark},</if>
 			<if test="flag!=null and flag !=''">flag=#{flag},</if>
-			<!--<if test="isPublish!=null and isPublish !=''">is_publish=#{isPublish},</if>
-			<if test="md5!=null and md5 !=''">md5=#{md5},</if>-->
 			<if test="metadata!=null">metadata=#{metadata,javaType=Object,jdbcType=OTHER,typeHandler=it.geosolutions.swgeoserver.entry.JsonTypeHandler},</if>
+			<if test="styleId!=null">style_id=#{styleId},</if>
 		</trim>
 		WHERE id = #{id}
 	</update>
@@ -117,19 +118,23 @@
 		</if>
 	</update>
 
-
-	<!--<select id="findTableNames" resultMap="TableNamesMap">
-		select * from <include refid="table"/>
-		&lt;!&ndash;<trim prefix="WHERE" prefixOverrides="AND |OR ">
+	<select id="findTableNames" resultMap="TableNamesMap">
+		select t.id,t.name_cn,t.name_en,t.workspace,t.state,t.creater,t.create_time,t.updater,t.update_time,t.remark,t.flag,t.datastore,t.metadata
+		,s.id styleId,s.name_cn styleNameCn,s.name_en styleNameEn from tablenames t left join sys_style s on t.style_id = s.id
+		<trim prefix="WHERE" prefixOverrides="AND |OR ">
 			<if test="state != null">
-				AND state = #{state}
+				AND t.state = #{state}
 			</if>
 			<if test="nameCn != null">
-				AND name_cn = #{nameCn}
+				AND t.name_cn = #{nameCn}
 			</if>
-		</trim>&ndash;&gt;
-		order by id
-	</select>-->
+		</trim>
+		order by t.id
+	</select>
+
+	<select id="getExtent"  parameterType="Long" resultType="String">
+		SELECT ST_Extent(the_geom) from workdata_base where task_id = ${taskId}
+	</select>
 
 	<!-- 作废
 	<update id="updateState" parameterType="Long[]">
@@ -141,6 +146,12 @@
 		</if>
 	</update>
 	-->
+
+	<!-- 查询数据库中已经导入的表名 -->
+	<!--<select id="findTableName" resultType="java.lang.String">
+		SELECT tablename FROM pg_tables	WHERE tablename NOT LIKE 'pg%' AND tablename NOT LIKE 'sql_%' and tablename not like '%tablenames%' and schemaname = 'public'
+	</select>-->
+
 
 	<!-- 删除对照表数据
 	<delete id="deleteTableNames" parameterType="Long[]">

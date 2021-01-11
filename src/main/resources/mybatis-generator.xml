@@ -104,7 +104,7 @@
         <!--               enableDeleteByExample="false" enableSelectByExample="false"-->
         <!--               selectByExampleQueryId="false">-->
         <!--        </table>-->
-        <table tableName="sys_styletype" domainObjectName="StyleType"
+        <table tableName="sys_style" domainObjectName="Style"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">

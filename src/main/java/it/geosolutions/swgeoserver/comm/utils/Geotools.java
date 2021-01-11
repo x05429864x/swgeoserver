@@ -7,7 +7,6 @@ import com.vividsolutions.jts.geom.Point;
 import it.geosolutions.swgeoserver.comm.base.ShpCharset;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.geotools.data.*;
@@ -25,7 +24,6 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.feature.type.GeometryTypeImpl;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.geometry.jts.JTS;
@@ -38,7 +36,6 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CRSAuthorityFactory;
@@ -60,12 +57,12 @@ import static org.geotools.data.Transaction.AUTO_COMMIT;
 public class Geotools {
 
     private static Logger logger = Logger.getLogger(Geotools.class);
-    private static DataStore postgisDatasore;
+    private static JDBCDataStore postgisDatasore;
 
     /**
      * @param postgisDatasore 静态PGDatastore获取默认，实例化PGDatastore指定自定义
      */
-    public Geotools(DataStore postgisDatasore) {
+    public Geotools(JDBCDataStore postgisDatasore) {
         if (postgisDatasore == null) {
             postgisDatasore = PGDatastore.getDefeaultDatastore();
 
@@ -447,7 +444,12 @@ public class Geotools {
         return result;
     }
 
-    public static boolean shp2pgtable(String shpPath, String pgtableName,int i) {
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    public static boolean shp2pgtable(String shpPath, String pgtableName, int i) {
         return shp2pgtable(shpPath, pgtableName, ShpCharset.UTF_8,i);
     }
 
@@ -463,9 +465,9 @@ public class Geotools {
         try {
             ShapefileDataStore shapefileDataStore = new ShapefileDataStore(new File(shpPath).toURI().toURL());
             shapefileDataStore.setCharset(shpCharset);
-            String typeName = shapefileDataStore.getTypeNames()[0];
-            FeatureType schema = shapefileDataStore.getSchema();
-            SimpleFeatureSource simpleFeatureSource = shapefileDataStore.getFeatureSource(pgtableName);
+//            String typeName = shapefileDataStore.getTypeNames()[0];
+//            FeatureType schema = shapefileDataStore.getSchema();
+//            SimpleFeatureSource simpleFeatureSource = shapefileDataStore.getFeatureSource(pgtableName);
             FeatureCollection featureCollection = shapefileDataStore.getFeatureSource().getFeatures();
             if (i==0){
                 write2pg(featureCollection, pgtableName);
@@ -725,12 +727,13 @@ public class Geotools {
 
                 newAttributeDescriptors.add(descriptor);
             }
-
+            simpleFeatureTypeBuilder.getDefaultGeometry();
             //使用新的属性类
             simpleFeatureTypeBuilder.addAll(newAttributeDescriptors);
-
+            simpleFeatureTypeBuilder.getDefaultGeometry();
             //获取新属性值
             schema = simpleFeatureTypeBuilder.buildFeatureType();
+            schema.getGeometryDescriptor();
             //创建数据表
             postgisDatasore.createSchema(schema);
             it.geosolutions.swgeoserver.comm.utils.FileUtils.delFolder(shpPath);

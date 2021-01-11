@@ -36,8 +36,11 @@ public interface TableNamesService {
 
     int delete(Long ids);
 
+    int delete(Long[] ids);
+
     int updateTableNames(TableNames tableNames);
 
+    String getExtent(int taskId);
    /* int deleteTableNames(Long[] ids);
     List<String> findTableName();
     int updateState(Long[] ids);*/

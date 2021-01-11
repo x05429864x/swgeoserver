@@ -60,6 +60,7 @@ public class ReturnFormat {
 		messageMap.put("4001", "数据存储已存在!");
 		messageMap.put("4002", "图层已存在!");
 		messageMap.put("4003", "图层不存在!");
+		messageMap.put("4004", "样式已存在!");
 
 		messageMap.put("9000", "用户名或是密码错误");
 		messageMap.put("9001", "不能同时执行多个任务");

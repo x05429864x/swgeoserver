@@ -1,6 +1,5 @@
 package it.geosolutions.swgeoserver.service.serviceImpl;
 
-import it.geosolutions.swgeoserver.comm.utils.FileUtils;
 import it.geosolutions.swgeoserver.comm.utils.Logger;
 import it.geosolutions.swgeoserver.comm.utils.ShpReadUtils;
 import it.geosolutions.swgeoserver.dao.UploadFileMapper;
@@ -35,8 +34,8 @@ public class UploadFileServiceImpl implements UploadFileService {
     }
 
     @Override
-    public List<Map<String, Object>> readShp2List(String shpPath, String tableName) {
-        List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+    public List<Map<Object, Object>> readShp2List(String shpPath, String tableName) {
+        List<Map<Object, Object>> list = new ArrayList<Map<Object,Object>>();
         File file = new File(shpPath);
         File[] files = file.listFiles();
         String code = "GBK";
@@ -60,21 +59,28 @@ public class UploadFileServiceImpl implements UploadFileService {
     }
 
     @Override
-    public int saveData(List<Map<String, Object>> list,String tableName) {
-        List<String> valueList = new ArrayList<String>();
+    public int saveData(List<Map<Object, Object>> list,String tableName) {
+        List<Object> valueList = new ArrayList<Object>();
         // 拼接列名
         List<String> key = new ArrayList<String>();
-        for (Map<String, Object> att : list) {
-            for (Map.Entry<String, Object> entry : att.entrySet()) {
+        for (Map<Object, Object> att : list) {
+            for (Map.Entry<Object, Object> entry : att.entrySet()) {
                 key.add(String.valueOf(entry.getKey()).toLowerCase());
             }
             break;
         }
-        for (Map<String, Object> att : list) {
+        for (Map<Object, Object> att : list) {
             // 客户端传递的参数的VALUE
             StringBuffer value = new StringBuffer();
-            for (Map.Entry<String, Object> entry : att.entrySet()) {
-                value.append("'" + String.valueOf(entry.getValue()) + "',");
+
+            for (Map.Entry<Object, Object> entry : att.entrySet()) {
+                if(entry.getValue()==null){
+                    value.append((char[]) null+ ",");
+                }else {
+                    value.append("'" + String.valueOf(entry.getValue()) + "',");
+                }
+
+
             }
             valueList.add("("+value.substring(0,value.length() -1)+")");
 //            break;

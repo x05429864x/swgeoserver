@@ -5,24 +5,27 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import it.geosolutions.swgeoserver.comm.base.BaseGeoserverREST;
 import it.geosolutions.swgeoserver.comm.utils.XmlUtil;
+import it.geosolutions.swgeoserver.config.ApiJsonObject;
+import it.geosolutions.swgeoserver.config.ApiJsonProperty;
+import it.geosolutions.swgeoserver.controller.base.BaseController;
 import it.geosolutions.swgeoserver.entry.StyleType;
 import it.geosolutions.swgeoserver.exception.ReturnFormat;
 import it.geosolutions.swgeoserver.service.StyleTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 
 @RestController
-@RequestMapping("/styles")
-@Api(tags = "样式接口",description = "样式接口")
-public class StylesController extends BaseGeoserverREST {
+@RequestMapping("/styleType")
+@Api(tags = "工作数据样式接口",description = "工作数据样式接口")
+public class StyleTypeController extends BaseController {
 
     @Value("${geoserver_style_path}")
     private String GEOSERVER_STYLE_PATH;
@@ -63,26 +66,28 @@ public class StylesController extends BaseGeoserverREST {
             "  \"fillcolor\": \"填充颜色\"\n" +
             "}",required = true)@RequestBody(required = true) StyleType styleType){
         try {
-            boolean flag = reader.existsStyle("workStyle");
+            boolean flag = BaseGeoserverREST.reader.existsStyle("workStyle");
             if(!flag){
                 File newfile = new ClassPathResource("style/workStyle.sld").getFile();
                 newfile.renameTo(new File(GEOSERVER_STYLE_PATH + "wordStyle.sld"));
-                boolean sldpublished = publisher.publishStyle(newfile,"workStyle");
+                boolean sldpublished = BaseGeoserverREST.publisher.publishStyle(newfile,"workStyle");
                 System.out.println("发布样式成功"+sldpublished);
             }
-            System.out.println("workStyle样式已存在.");
+//            System.out.println("workStyle样式已存在.");
             File file = XmlUtil.modifyStyle(GEOSERVER_STYLE_PATH, styleType);
-            boolean updateStyle = publisher.updateStyle(file,"workStyle");
+            boolean updateStyle = BaseGeoserverREST.publisher.updateStyle(file,"workStyle");
             System.out.println("更新样式成功"+updateStyle);
-            if (null == styleType.getId()){
-                styleTypeService.insert(styleType);
-            }else {
-                styleTypeService.updateByPrimaryKey(styleType);
+            if(updateStyle){
+                if (null == styleType.getId()){
+                    styleTypeService.insert(styleType);
+                }else {
+                    styleTypeService.updateByPrimaryKey(styleType);
+                }
             }
-
         }catch (Exception e){
             e.printStackTrace();
         }
         return ReturnFormat.retParam(0,null);
     }
+
 }

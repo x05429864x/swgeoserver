@@ -3,6 +3,7 @@ package it.geosolutions.swgeoserver.comm.utils;
 
 import org.apache.log4j.Logger;
 import org.geotools.data.DataStore;
+import org.geotools.jdbc.JDBCDataStore;
 
 /**
  * @author wangkang
@@ -14,7 +15,7 @@ public class App {
     public static void main(String[] args) {
 
         PGDatastore pgDatastore = new PGDatastore();
-        DataStore datastore = PGDatastore.getDefeaultDatastore();
+        JDBCDataStore datastore = PGDatastore.getDefeaultDatastore();
         Geotools geotools = new Geotools(datastore);
         String geojsonpath = "C:\\test\\ChinaWorldCitysBigbelin\\chinaCompany2.geojson";
         String shpfilepath = "C:\\Users\\x\\Desktop\\geoserver\\china\\china\\china.shp";

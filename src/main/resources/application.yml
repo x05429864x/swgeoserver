@@ -1,20 +1,17 @@
 server:
+  port: 8084
   servlet:
     context-path: /swgeoserver
   tomcat:
     uri-encoding: utf-8
-  port: 8084
----
 app:
   evniroment: dev
 
----
-upload_file_path: /usr/local/shpfile/siweidg_swgeoserver_apache/upload/
-upload_extract_path: /usr/local/shpfile/siweidg_swgeoserver_apache/extract/
-geoserver_style_path: /usr/local/shpfile/siweidg_swgeoserver_apache/style/
-image_path: /usr/local/shpfile/siweidg_swgeoserver_apache/image/
+upload_file_path: /mnt/nfs/home/mbtiles/upload/
+upload_extract_path: /mnt/nfs/home/mbtiles/extract/
+geoserver_style_path: /mnt/nfs/home/mbtiles/style/
+##image_path: /usr/local/shpfile/siweidg_swgeoserver_apache/image/
 
----
 mybatis:
   type-handlers-package: it.geosolutions.swgeoserver.entry.JsonTypeHandler
   config-location: classpath:mybatis/mybatis.cfg.xml        # mybatis配置文件所在路径
@@ -63,3 +60,4 @@ spring:
     multipart:
       max-file-size: 4096MB
       max-request-size: 4096MB
+

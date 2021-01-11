@@ -17,7 +17,7 @@ import java.net.URL;
 
 import static org.junit.Assert.fail;
 
-public class BaseGeoserverREST extends BaseController {
+public class BaseGeoserverREST  {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(BaseGeoserverREST.class);
 
@@ -26,7 +26,7 @@ public class BaseGeoserverREST extends BaseController {
 
     public static final String DEFAULT_WS = "ws_Test";
 
-    public static final String URL_ADD = "http://192.168.8.228:8080/geoserver/";
+    public static final String URL_ADD = "http://192.168.8.228:8080/geoserver";
 
     public static final String USER_NAME = "admin";
 
@@ -59,9 +59,9 @@ public class BaseGeoserverREST extends BaseController {
         RESTPW = getenv("gsmgr_restpw", "geoserver");
         GS_VERSION = getenv("gsmgr_version", "2.8");*/
 
-        RESTURL = getenv("gsmgr_resturl", "http://192.168.8.228:8080/geoserver");
-        RESTUSER = getenv("gsmgr_restuser","admin");
-        RESTPW = getenv("gsmgr_restpw", "geoserver");
+        RESTURL = getenv("gsmgr_resturl", URL_ADD);
+        RESTUSER = getenv("gsmgr_restuser",USER_NAME);
+        RESTPW = getenv("gsmgr_restpw", PASSWORLD);
         GS_VERSION = getenv("gsmgr_version", "2.14.1");
 
         // These tests will destroy data, so let's make sure we do want to run them

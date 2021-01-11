@@ -12,9 +12,9 @@ public interface UploadFileService {
 
 //    String CreateAttributeTable(String TableName, String KeyFieldName, List<String> TheFieldNames);
 
-    List<Map<String, Object>> readShp2List(String shpPath, String tableName);
+    List<Map<Object, Object>> readShp2List(String shpPath, String tableName);
 
-    int saveData(List<Map<String, Object>> list,String tableName);
+    int saveData(List<Map<Object, Object>> list,String tableName);
 
     int truncateTable(String tableName);
 

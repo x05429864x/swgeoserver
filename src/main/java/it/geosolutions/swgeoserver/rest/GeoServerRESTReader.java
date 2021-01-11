@@ -25,12 +25,9 @@
 
 package it.geosolutions.swgeoserver.rest;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import it.geosolutions.swgeoserver.comm.utils.JsonUtils;
-import it.geosolutions.swgeoserver.entry.User;
 import it.geosolutions.swgeoserver.rest.decoder.RESTCoverage;
 import it.geosolutions.swgeoserver.rest.decoder.RESTCoverageList;
 import it.geosolutions.swgeoserver.rest.decoder.RESTCoverageStore;
@@ -58,7 +55,6 @@ import it.geosolutions.swgeoserver.rest.decoder.RESTWmsStoreList;
 import it.geosolutions.swgeoserver.rest.decoder.RESTWorkspaceList;
 import it.geosolutions.swgeoserver.rest.decoder.about.GSVersionDecoder;
 import it.geosolutions.swgeoserver.rest.decoder.utils.NameLinkElem;
-import it.geosolutions.swgeoserver.rest.encoder.UserEncoder;
 import it.geosolutions.swgeoserver.rest.manager.GeoServerRESTStructuredGridCoverageReaderManager;
 import it.geosolutions.swgeoserver.rest.manager.GeoServerRESTStyleManager;
 
@@ -1253,11 +1249,10 @@ public class GeoServerRESTReader {
         return HTTPUtils.postJson(url, jsonParam.toJSONString(),username, password);
     }
 
-    //编写方法
-    public static String jsonFormat(String jsonString) {
-        JSONObject object= JSONObject.parseObject(jsonString);
-        jsonString = JSON.toJSONString(object, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
-        return jsonString;
+    public String imgStyle(String styleName) {
+        String url = "http://192.168.8.228:8080/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&STRICT=false&style=tubiao";
+//        String url = baseurl + "/rest/workspaces/" + prefix + ".xml";
+//        String composed = Util.appendQuietOnNotFound(quietOnNotFound, url);
+        return HTTPUtils.get(url, username, password);
     }
-
 }

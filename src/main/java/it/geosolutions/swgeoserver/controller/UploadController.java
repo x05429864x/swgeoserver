@@ -15,6 +15,7 @@ import it.geosolutions.swgeoserver.exception.ReturnFormat;
 import it.geosolutions.swgeoserver.service.TableNamesService;
 import it.geosolutions.swgeoserver.service.UploadFileService;
 import org.geotools.data.DataStore;
+import org.geotools.jdbc.JDBCDataStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,7 +68,6 @@ public class UploadController extends BaseController {
 
     @ApiOperation(value = "上传zip导入数据库", notes = "upload Zip to the database", response = String.class)
     @RequestMapping(value = "/upload", produces = "application/json;charset=UTF-8", method = RequestMethod.POST)
-//    @ResponseBody
     @Transactional
     public Object uploadZip(@ApiParam(name = "uploadFile",value = "上传文件",required = true) @RequestPart ( value="uploadFile", required = true) MultipartFile zipFile,
                             @ApiJsonObject(name = "paramMap", value = {
@@ -189,12 +189,12 @@ public class UploadController extends BaseController {
         if("work".equals(workspace)){
             try {
                 long shp2pgStart = System.currentTimeMillis();
-                List<Map<String, Object>> shpList = uploadFileService.readShp2List(extractFilePath+name+"/",tablenameCn);
+                List<Map<Object, Object>> shpList = uploadFileService.readShp2List(extractFilePath+name+"/",tablenameCn);
                 uploadFileService.saveData(shpList,"workdata_base");
                 jsonObject.put("filename",filePath);
                 tableNames = tableNamesService.getByNameEn("workdata_base");
                 tableNames.setMetadata(jsonObject);
-                tableNames.setDatastore("gis");
+                tableNames.setDatastore("work");
                 tableNamesService.updateTableNames(tableNames);
                 long shp2pgEnd = System.currentTimeMillis();
                 logger.info("写入数据库运行时间：" + (shp2pgEnd - shp2pgStart) + "ms");
@@ -203,9 +203,24 @@ public class UploadController extends BaseController {
             }
         //矢量辅助数据
         }else if("xzqh".equals(workspace)){
+            JDBCDataStore datastore = PGDatastore.getDefeaultDatastore();
+            Geotools geotools = new Geotools(datastore);
             try {
+                boolean checkTable = checkTable("sys_xzqh");
+                //查看对照表是否存在
+                TableNames t = tableNamesService.getByName(tablenameCn, "sys_xzqh");
+                if(!checkTable) {
+                    if (t != null) {
+                        return ReturnFormat.retParam(2030, t);
+                    }
+                    //读取shp并保存到list
+//                    List<Map<Object, Object>> shpList = uploadFileService.readShp2List(extractFilePath + name + "/", tablenameCn);
+                    //创建数据库表
+                    geotools.createTable(extractFilePath + name + "/", fileName, "sys_xzqh", "");
+                    logger.info("*********创建数据表成功");
+                }
                 long shp2pgStart = System.currentTimeMillis();
-                List<Map<String, Object>> shpList = uploadFileService.readShp2List(extractFilePath+name+"/",tablenameCn);
+                List<Map<Object, Object>> shpList = uploadFileService.readShp2List(extractFilePath+name+"/",tablenameCn);
                 uploadFileService.truncateTable("sys_xzqh");
                 logger.info("********truncateTable 成功!");
                 uploadFileService.saveData(shpList,"sys_xzqh");
@@ -213,7 +228,7 @@ public class UploadController extends BaseController {
                 tableNames = tableNamesService.getByNameEn("sys_xzqh");
                 tableNames.setNameCn(tablenameCn);
                 tableNames.setMetadata(jsonObject);
-                tableNames.setDatastore("gis");
+                tableNames.setDatastore("xzqh");
                 tableNamesService.updateTableNames(tableNames);
                 long shp2pgEnd = System.currentTimeMillis();
                 logger.info("写入数据库运行时间：" + (shp2pgEnd - shp2pgStart) + "ms");
@@ -223,7 +238,7 @@ public class UploadController extends BaseController {
         }else if("jdxz".equals(workspace)){
             try {
                 long shp2pgStart = System.currentTimeMillis();
-                List<Map<String, Object>> shpList = uploadFileService.readShp2List(extractFilePath+name+"/",tablenameCn);
+                List<Map<Object, Object>> shpList = uploadFileService.readShp2List(extractFilePath+name+"/",tablenameCn);
                 uploadFileService.truncateTable("sys_jdxz");
                 logger.info("********truncateTable 成功!");
                 uploadFileService.saveData(shpList,"sys_jdxz");
@@ -231,7 +246,7 @@ public class UploadController extends BaseController {
                 tableNames = tableNamesService.getByNameEn("sys_jdxz");
                 tableNames.setNameCn(tablenameCn);
                 tableNames.setMetadata(jsonObject);
-                tableNames.setDatastore("gis");
+                tableNames.setDatastore("jdxz");
                 tableNamesService.updateTableNames(tableNames);
                 long shp2pgEnd = System.currentTimeMillis();
                 logger.info("写入数据库运行时间：" + (shp2pgEnd - shp2pgStart) + "ms");
@@ -240,10 +255,9 @@ public class UploadController extends BaseController {
             }
         }else if("fuzhu_shp".equals(workspace)){
             String shpFileName = FileUtils.getFileNameNoEx(fileName);
-            DataStore datastore = PGDatastore.getDefeaultDatastore();
+            JDBCDataStore datastore = PGDatastore.getDefeaultDatastore();
             Geotools geotools = new Geotools(datastore);
             try {
-
                 long shp2pgStart = System.currentTimeMillis();
                 boolean checkTable = checkTable("shp_"+shpFileName);
 //                if("0".equals(flag)){
@@ -253,16 +267,13 @@ public class UploadController extends BaseController {
                     if(t!=null){
                         return ReturnFormat.retParam(2030, t);
                     }
-
-
                     //读取shp并保存到list
-                    List<Map<String, Object>> shpList = uploadFileService.readShp2List(extractFilePath+name+"/",tablenameCn);
+                    List<Map<Object, Object>> shpList = uploadFileService.readShp2List(extractFilePath+name+"/",tablenameCn);
                     //创建数据库表
                     geotools.createTable(extractFilePath+name+"/",fileName,shpFileName,"");
                     logger.info("*********创建数据表成功");
-                    uploadFileService.saveData(shpList,"shp_"+shpFileName);
+                    int i = uploadFileService.saveData(shpList, "shp_" + shpFileName);
                     logger.info("*********保存数据表成功");
-
                     jsonObject.put("filename",filePath);
                     tableNames.setState(0L);
                     tableNames.setWorkspace(workspace);
@@ -275,13 +286,6 @@ public class UploadController extends BaseController {
                 }else{
                     return ReturnFormat.retParam(2030, t);
                 }
-                /*}else{
-                    if(checkTable){
-                        uploadFileService.saveData(shpList,"shp_"+name);
-                    }else{
-                        return ReturnFormat.retParam(2032,null);
-                    }
-                }*/
                 long shp2pgEnd = System.currentTimeMillis();
                 System.out.println("写入数据库运行时间：" + (shp2pgEnd - shp2pgStart) + "ms");
             }catch(Exception e){
@@ -313,16 +317,18 @@ public class UploadController extends BaseController {
 
             try{
                 jsonObject =  SqliteDao.executeQuery(extractFilePath+filePath);
+                File fileLength = new File(extractFilePath+filePath);
                 if (jsonObject == null || jsonObject.size() < 1) {
                     return ReturnFormat.retParam(2017, null);
                 } else {
-                    TableNames t = tableNamesService.getByName(tablenameCn, newName );
+                    TableNames t = tableNamesService.getByName(jsonObject.get("name").toString(), newName );
                     if(t!=null){
-                        return ReturnFormat.retParam(2030, t);
+                        return ReturnFormat.retParam(4002, "图层"+jsonObject.get("name").toString()+"已存在!");
                     }
                     String md5 = MD5Utils.getFileMD5String(new File(extractFilePath+filePath));
                     jsonObject.put("MD5",md5);
                     jsonObject.put("filename",filePath);
+                    jsonObject.put("size",fileLength.length());
                     String json = JSON.toJSONString(jsonObject);
                     tableNames.setState(0L);
                     tableNames.setWorkspace(workspace);
