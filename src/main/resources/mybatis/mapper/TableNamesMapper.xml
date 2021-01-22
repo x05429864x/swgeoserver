@@ -2,12 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="it.geosolutions.swgeoserver.dao.TableNamesMapper">
+<mapper namespace="com.siweidg.swgeoserver.dao.TableNamesMapper">
 
 	<sql id="table">tablenames</sql>
 
 	<!-- 定义的resultMap，可以解决类的属性名和数据库列名不一致的问题-->
-	<resultMap id="TableNamesMap" type="it.geosolutions.swgeoserver.entry.TableNames">
+	<resultMap id="TableNamesMap" type="com.siweidg.swgeoserver.entry.TableNames">
 		<id property="id" column="id" jdbcType="BIGINT"/>
 		<result property="nameCn" column="name_cn" jdbcType="VARCHAR" />
 		<result property="nameEn" column="name_en" jdbcType="VARCHAR"  />
@@ -20,9 +20,9 @@
 		<result property="updateTime" column="update_time"  jdbcType="TIMESTAMP"/>
 		<result property="remark" column="remark" jdbcType="VARCHAR"  />
 		<result property="flag" column="flag" jdbcType="INTEGER"  />
-		<result property="metadata" column="metadata" javaType="Object" typeHandler="it.geosolutions.swgeoserver.entry.JsonTypeHandler" />
+		<result property="metadata" column="metadata" javaType="Object" typeHandler="com.siweidg.swgeoserver.entry.JsonTypeHandler" />
 		<!-- 关联对象 -->
-		<association property="style" javaType="it.geosolutions.swgeoserver.entry.Style">
+		<association property="style" javaType="com.siweidg.swgeoserver.entry.Style">
 			<!-- 关联条件Tablenames的style_id对应着Style的id -->
 			<id column="styleId" property="styleId"/>
 			<result column="styleNameCn" property="styleNameCn"/>
@@ -82,7 +82,7 @@
 	<insert id="insertTableNames" parameterType="TableNames"
 			keyColumn="id" keyProperty="id" useGeneratedKeys="true" >
 		insert into <include refid="table"/>(name_cn,name_en,workspace,datastore,creater,create_time,updater,update_time,state,remark,flag,metadata)
-		values (#{nameCn},#{nameEn},#{workspace},#{datastore},#{creater},#{createTime},#{updater},#{updateTime},#{state},#{remark},#{flag},#{metadata,javaType=Object,jdbcType=OTHER,typeHandler=it.geosolutions.swgeoserver.entry.JsonTypeHandler})
+		values (#{nameCn},#{nameEn},#{workspace},#{datastore},#{creater},#{createTime},#{updater},#{updateTime},#{state},#{remark},#{flag},#{metadata,javaType=Object,jdbcType=OTHER,typeHandler=com.siweidg.swgeoserver.entry.JsonTypeHandler})
 	</insert>
 
 	<!-- 更新 -->
@@ -100,7 +100,7 @@
 			<if test="state!=null and state !=''">state=#{state},</if>
 			<if test="remark!=null and remark !=''">remark=#{remark},</if>
 			<if test="flag!=null and flag !=''">flag=#{flag},</if>
-			<if test="metadata!=null">metadata=#{metadata,javaType=Object,jdbcType=OTHER,typeHandler=it.geosolutions.swgeoserver.entry.JsonTypeHandler},</if>
+			<if test="metadata!=null">metadata=#{metadata,javaType=Object,jdbcType=OTHER,typeHandler=com.siweidg.swgeoserver.entry.JsonTypeHandler},</if>
 			<if test="styleId!=null">style_id=#{styleId},</if>
 		</trim>
 		WHERE id = #{id}

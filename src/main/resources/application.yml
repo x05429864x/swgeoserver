@@ -13,9 +13,9 @@ geoserver_style_path: /mnt/nfs/home/mbtiles/style/
 ##image_path: /usr/local/shpfile/siweidg_swgeoserver_apache/image/
 
 mybatis:
-  type-handlers-package: it.geosolutions.swgeoserver.entry.JsonTypeHandler
+  type-handlers-package: com.siweidg.swgeoserver.entry.JsonTypeHandler
   config-location: classpath:mybatis/mybatis.cfg.xml        # mybatis配置文件所在路径
-  type-aliases-package: it.geosolutions.swgeoserver.entry    # 所有Entity别名类所在包
+  type-aliases-package: com.siweidg.swgeoserver.entry    # 所有Entity别名类所在包
   mapper-locations:
   - classpath:mybatis/mapper/**/*.xml
 # pagehelper

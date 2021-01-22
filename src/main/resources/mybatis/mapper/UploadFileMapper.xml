@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="it.geosolutions.swgeoserver.dao.UploadFileMapper">
+<mapper namespace="com.siweidg.swgeoserver.dao.UploadFileMapper">
 
 	<!-- 执行sql -->
 	<select id="executeBysql" parameterType="java.lang.String"
@@ -16,7 +16,7 @@
 
 	<!-- 保存数据 根据表名和传入的列和值，保存数据 暂时用于保存图形数据和图形属性数据 -->
 	<insert id="saveData" statementType="STATEMENT"
-			parameterType="it.geosolutions.swgeoserver.entry.TablesEntity">
+			parameterType="com.siweidg.swgeoserver.entry.TablesEntity">
 		INSERT INTO ${tableName}
 		<foreach collection="columnList" item="columnList"
 				 separator="," open="(" close=")">

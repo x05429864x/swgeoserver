@@ -6,8 +6,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.geosolutions.swgeoserver.comm.base.ShpCharset;
-import it.geosolutions.swgeoserver.comm.init.Constants;
+import com.siweidg.swgeoserver.comm.init.Constants;
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
@@ -18,12 +17,8 @@ import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.store.ContentEntry;
 import org.geotools.feature.AttributeTypeBuilder;
-import org.geotools.feature.NameImpl;
-import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.jdbc.JDBCDataStore;
 
 import org.opengis.feature.simple.SimpleFeature;

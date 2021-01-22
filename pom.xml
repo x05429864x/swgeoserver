@@ -9,7 +9,7 @@
         <version>2.0.6.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>it.geosolutions</groupId>
+    <groupId>com.siweidg</groupId>
     <artifactId>swgeoserver</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>swgeoserver</name>
@@ -77,6 +77,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -91,10 +92,23 @@
             </exclusions>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>-->
+
+        <!-- Java 字节码以二进制的形式存储在 .class 文件中，
+        每一个 .class 文件包含一个 Java 类或接口。
+        Javaassist 就是一个用来 处理 Java 字节码的类库。
+        它可以在一个已经编译好的类中添加新的方法，或者是修改已有的方法，
+        并且不需要对字节码方面有深入的了解。
+        同时也可以去生成一个新的类对象，通过完全手动的方式。 -->
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.27.0-GA</version>
         </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
         <dependency>
@@ -132,7 +146,7 @@
             <version>1.2.5</version>
         </dependency>
 
-
+        <!-- Geotools Charsets用到 -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -151,13 +165,14 @@
             <artifactId>dom4j</artifactId>
             <version>1.6.1</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.github.junrar/junrar -->
+        <!-- 压缩未用到 -->
         <dependency>
             <groupId>com.github.junrar</groupId>
             <artifactId>junrar</artifactId>
             <version>2.0.0</version>
         </dependency>
 
+        <!-- geoserver -->
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
@@ -185,6 +200,7 @@
         </dependency>
 
 
+        <!-- classifier可以是任意的字符串，用于拼接在GAV之后来确定指定的文件。可用于区分不同jdk版本所生成的jar包 -->
         <dependency>
             <groupId>net.sf.json-lib</groupId>
             <artifactId>json-lib</artifactId>
@@ -251,11 +267,11 @@
             <version>${gt.version}</version>
         </dependency>-->
         <!-- https://mvnrepository.com/artifact/org.geotools/gt-main -->
-        <dependency>
+        <!--<dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
             <version>${gt.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.geotools.jdbc</groupId>
             <artifactId>gt-jdbc-postgis</artifactId>
@@ -273,11 +289,11 @@
             <artifactId>gt-geojson</artifactId>
             <version>${gt.version}</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-data</artifactId>
             <version>${gt.version}</version>
-        </dependency>
+        </dependency>-->
         <!--<dependency>-->
             <!--<groupId>org.geotools</groupId>-->
             <!--<artifactId>gt-geotools</artifactId>-->
@@ -347,7 +363,7 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <version>2.9.2</version>
         </dependency>
-        <dependency>
+       <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
             <version>1.5.21</version>
@@ -447,6 +463,7 @@
             <version>2.9.0</version>
         </dependency>
 
+        <!-- assertEquals -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
