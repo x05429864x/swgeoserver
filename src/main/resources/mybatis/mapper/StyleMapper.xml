@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.siweidg.swgeoserver.dao.StyleMapper">
+  <resultMap id="StyleMap" type="com.siweidg.swgeoserver.entry.Style">
+    <id column="id" jdbcType="BIGINT" property="styleId" />
+    <result column="name_cn" jdbcType="VARCHAR" property="styleNameCn" />
+    <result column="name_en" jdbcType="VARCHAR" property="styleNameEn" />
+    <result column="workspace" jdbcType="VARCHAR" property="styleworkspace" />
+    <result column="creater" jdbcType="BIGINT" property="styleCreater" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="styleCreateTime" />
+    <result column="remark" jdbcType="VARCHAR" property="styleRemark" />
+    <result column="flag" jdbcType="INTEGER" property="styleFlag" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name_cn, name_en, workspace, creater, create_time, remark, flag
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="StyleMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sys_style
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <!-- 根据条件-->
+  <select id="getByName" resultMap="StyleMap">
+    select * from sys_style
+    <if test="_parameter != null">
+      <where>
+        name_cn = '${nameCn}' or name_en = '${nameEn}'
+      </where>
+    </if>
+    order by id
+  </select>
+
+  <!-- 查询nameEn最大编号-->
+  <select id="getMaxNumber" resultType="java.lang.String">
+    SELECT max(substr(name_en, 6)) FROM sys_style  where  name_en like 'style%';
+  </select>
+
+  <!-- 根据Params-->
+  <select id="getByParams" resultMap="StyleMap" parameterType="Map">
+    select * from sys_style
+    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+      <if test="params.nameEn!=null">
+        AND name_en = #{params.nameEn}
+      </if>
+      <if test="params.nameCn!=null">
+        AND name_cn = #{params.nameCn}
+      </if>
+    </trim>
+    order by id
+  </select>
+
+  <!-- 根据条件分页查询-->
+  <select id="findAll" resultMap="StyleMap">
+    select * from sys_style
+    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+      <if test="nameCn != null">
+        AND name_cn = #{nameCn}
+      </if>
+    </trim>
+    order by id
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from sys_style
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.siweidg.swgeoserver.entry.Style">
+    insert into sys_style ( name_cn, name_en,
+      workspace, creater, create_time, 
+      remark, flag)
+    values (#{styleNameCn,jdbcType=VARCHAR}, #{styleNameEn,jdbcType=VARCHAR},
+      #{styleWorkspace,jdbcType=VARCHAR}, #{styleCreater,jdbcType=BIGINT}, #{styleCreateTime,jdbcType=TIMESTAMP},
+      #{styleRemark,jdbcType=VARCHAR}, #{styleFlag,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.siweidg.swgeoserver.entry.Style">
+    insert into sys_style
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="styleNameCn != null">
+        name_cn,
+      </if>
+      <if test="styleNameEn != null">
+        name_en,
+      </if>
+      <if test="styleWorkspace != null">
+        workspace,
+      </if>
+      <if test="styleCreater != null">
+        creater,
+      </if>
+      <if test="styleCreateTime != null">
+        create_time,
+      </if>
+      <if test="styleRemark != null">
+        remark,
+      </if>
+      <if test="styleFlag != null">
+        flag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="styleNameCn != null">
+        #{styleNameCn,jdbcType=VARCHAR},
+      </if>
+      <if test="styleNameEn != null">
+        #{styleNameEn,jdbcType=VARCHAR},
+      </if>
+      <if test="styleWorkspace != null">
+        #{styleWorkspace,jdbcType=VARCHAR},
+      </if>
+      <if test="styleCreater != null">
+        #{styleCreater,jdbcType=BIGINT},
+      </if>
+      <if test="styleCreateTime != null">
+        #{styleCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="styleRemark != null">
+        #{styleRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="styleFlag != null">
+        #{styleFlag,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.siweidg.swgeoserver.entry.Style">
+    update sys_style
+    <set>
+      <if test="styleNameCn != null">
+        name_cn = #{styleNameCn,jdbcType=VARCHAR},
+      </if>
+      <if test="styleNameEn != null">
+        name_en = #{styleNameEn,jdbcType=VARCHAR},
+      </if>
+      <if test="styleWorkspace != null">
+        workspace = #{styleWorkspace,jdbcType=VARCHAR},
+      </if>
+      <if test="styleCreater != null">
+        creater = #{styleCreater,jdbcType=BIGINT},
+      </if>
+      <if test="styleCreateTime != null">
+        create_time = #{styleCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="styleRemark != null">
+        remark = #{styleRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="styleFlag != null">
+        flag = #{styleFlag,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{styleId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.siweidg.swgeoserver.entry.Style">
+    update sys_style
+    set name_cn = #{styleNameCn,jdbcType=VARCHAR},
+      name_en = #{styleNameEn,jdbcType=VARCHAR},
+      workspace = #{styleWorkspace,jdbcType=VARCHAR},
+      creater = #{styleCreater,jdbcType=BIGINT},
+      create_time = #{styleCreateTime,jdbcType=TIMESTAMP},
+      remark = #{styleRemark,jdbcType=VARCHAR},
+      flag = #{styleFlag,jdbcType=INTEGER}
+    where id = #{styleId,jdbcType=BIGINT}
+  </update>
+</mapper>

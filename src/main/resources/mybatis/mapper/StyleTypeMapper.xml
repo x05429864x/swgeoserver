@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.siweidg.swgeoserver.dao.StyleTypeMapper">
+  <resultMap id="BaseResultMap" type="com.siweidg.swgeoserver.entry.StyleType">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="dtype" jdbcType="BIGINT" property="dtype" />
+    <result column="linetype" jdbcType="VARCHAR" property="linetype" />
+    <result column="lineopacity" jdbcType="VARCHAR" property="lineopacity" />
+    <result column="linewidth" jdbcType="VARCHAR" property="linewidth" />
+    <result column="linecolor" jdbcType="VARCHAR" property="linecolor" />
+    <result column="fillopacity" jdbcType="VARCHAR" property="fillopacity" />
+    <result column="fillcolor" jdbcType="VARCHAR" property="fillcolor" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, dtype, linetype, lineopacity, linewidth, linecolor, fillopacity, fillcolor
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sys_styletype
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from sys_styletype
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.siweidg.swgeoserver.entry.StyleType"
+          keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+    insert into sys_styletype ( dtype, linetype,
+      lineopacity, linewidth, linecolor, 
+      fillopacity, fillcolor)
+    values ( #{dtype,jdbcType=BIGINT}, #{linetype,jdbcType=VARCHAR},
+      #{lineopacity,jdbcType=VARCHAR}, #{linewidth,jdbcType=VARCHAR}, #{linecolor,jdbcType=VARCHAR},
+      #{fillopacity,jdbcType=VARCHAR}, #{fillcolor,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.siweidg.swgeoserver.entry.StyleType">
+    insert into sys_styletype
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+
+      <if test="dtype != null">
+        dtype,
+      </if>
+      <if test="linetype != null">
+        linetype,
+      </if>
+      <if test="lineopacity != null">
+        lineopacity,
+      </if>
+      <if test="linewidth != null">
+        linewidth,
+      </if>
+      <if test="linecolor != null">
+        linecolor,
+      </if>
+      <if test="fillopacity != null">
+        fillopacity,
+      </if>
+      <if test="fillcolor != null">
+        fillcolor,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+
+      <if test="dtype != null">
+        #{dtype,jdbcType=BIGINT},
+      </if>
+      <if test="linetype != null">
+        #{linetype,jdbcType=VARCHAR},
+      </if>
+      <if test="lineopacity != null">
+        #{lineopacity,jdbcType=VARCHAR},
+      </if>
+      <if test="linewidth != null">
+        #{linewidth,jdbcType=VARCHAR},
+      </if>
+      <if test="linecolor != null">
+        #{linecolor,jdbcType=VARCHAR},
+      </if>
+      <if test="fillopacity != null">
+        #{fillopacity,jdbcType=VARCHAR},
+      </if>
+      <if test="fillcolor != null">
+        #{fillcolor,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.siweidg.swgeoserver.entry.StyleType">
+    update sys_styletype
+    <set>
+      <if test="dtype != null">
+        dtype = #{dtype,jdbcType=BIGINT},
+      </if>
+      <if test="linetype != null">
+        linetype = #{linetype,jdbcType=VARCHAR},
+      </if>
+      <if test="lineopacity != null">
+        lineopacity = #{lineopacity,jdbcType=VARCHAR},
+      </if>
+      <if test="linewidth != null">
+        linewidth = #{linewidth,jdbcType=VARCHAR},
+      </if>
+      <if test="linecolor != null">
+        linecolor = #{linecolor,jdbcType=VARCHAR},
+      </if>
+      <if test="fillopacity != null">
+        fillopacity = #{fillopacity,jdbcType=VARCHAR},
+      </if>
+      <if test="fillcolor != null">
+        fillcolor = #{fillcolor,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.siweidg.swgeoserver.entry.StyleType">
+    update sys_styletype
+    set dtype = #{dtype,jdbcType=BIGINT},
+      linetype = #{linetype,jdbcType=VARCHAR},
+      lineopacity = #{lineopacity,jdbcType=VARCHAR},
+      linewidth = #{linewidth,jdbcType=VARCHAR},
+      linecolor = #{linecolor,jdbcType=VARCHAR},
+      fillopacity = #{fillopacity,jdbcType=VARCHAR},
+      fillcolor = #{fillcolor,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
