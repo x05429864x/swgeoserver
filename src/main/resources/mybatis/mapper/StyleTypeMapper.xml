@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.siweidg.swgeoserver.dao.StyleTypeMapper">
-  <resultMap id="BaseResultMap" type="com.siweidg.swgeoserver.entry.StyleType">
+  <resultMap id="StyleTypeMap" type="com.siweidg.swgeoserver.entry.StyleType">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="dtype" jdbcType="BIGINT" property="dtype" />
     <result column="linetype" jdbcType="VARCHAR" property="linetype" />
@@ -12,11 +12,12 @@
     <result column="linecolor" jdbcType="VARCHAR" property="linecolor" />
     <result column="fillopacity" jdbcType="VARCHAR" property="fillopacity" />
     <result column="fillcolor" jdbcType="VARCHAR" property="fillcolor" />
+    <result column="style_type_name" jdbcType="VARCHAR" property="styleTypeName" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, dtype, linetype, lineopacity, linewidth, linecolor, fillopacity, fillcolor
+    id, dtype, linetype, lineopacity, linewidth, linecolor, fillopacity, fillcolor, style_type_name
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="StyleTypeMap">
     select 
     <include refid="Base_Column_List" />
     from sys_styletype
@@ -30,11 +31,23 @@
           keyColumn="id" keyProperty="id" useGeneratedKeys="true">
     insert into sys_styletype ( dtype, linetype,
       lineopacity, linewidth, linecolor, 
-      fillopacity, fillcolor)
+      fillopacity, fillcolor,style_type_name)
     values ( #{dtype,jdbcType=BIGINT}, #{linetype,jdbcType=VARCHAR},
       #{lineopacity,jdbcType=VARCHAR}, #{linewidth,jdbcType=VARCHAR}, #{linecolor,jdbcType=VARCHAR},
-      #{fillopacity,jdbcType=VARCHAR}, #{fillcolor,jdbcType=VARCHAR})
+      #{fillopacity,jdbcType=VARCHAR}, #{fillcolor,jdbcType=VARCHAR}, #{styleTypeName,jdbcType=VARCHAR})
   </insert>
+
+  <!-- 根据条件分页查询-->
+  <select id="findAll" resultMap="StyleTypeMap">
+    select * from sys_styletype
+    <!--<trim prefix="WHERE" prefixOverrides="AND |OR ">
+      <if test="nameCn != null">
+        AND name_cn = #{nameCn}
+      </if>
+    </trim>-->
+    order by id
+  </select>
+
   <insert id="insertSelective" parameterType="com.siweidg.swgeoserver.entry.StyleType">
     insert into sys_styletype
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -60,6 +73,9 @@
       <if test="fillcolor != null">
         fillcolor,
       </if>
+      <if test="styleTypeName != null">
+        style_type_name
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
 
@@ -83,6 +99,9 @@
       </if>
       <if test="fillcolor != null">
         #{fillcolor,jdbcType=VARCHAR},
+      </if>
+      <if test="styleTypeName != null">
+        #{styleTypeName,jdbcType=VARCHAR}
       </if>
     </trim>
   </insert>
@@ -110,6 +129,9 @@
       <if test="fillcolor != null">
         fillcolor = #{fillcolor,jdbcType=VARCHAR},
       </if>
+      <if test="styleTypeName != null">
+        style_type_name = #{styleTypeName,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -121,7 +143,8 @@
       linewidth = #{linewidth,jdbcType=VARCHAR},
       linecolor = #{linecolor,jdbcType=VARCHAR},
       fillopacity = #{fillopacity,jdbcType=VARCHAR},
-      fillcolor = #{fillcolor,jdbcType=VARCHAR}
+      fillcolor = #{fillcolor,jdbcType=VARCHAR},
+      style_type_name = #{styleTypeName,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

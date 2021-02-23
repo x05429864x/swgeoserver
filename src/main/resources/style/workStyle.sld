@@ -15,12 +15,13 @@
             </Stroke>
           </PolygonSymbolizer>
         </Rule>
-        <Rule name="0">
+        <Rule>
+          <Name>0</Name>
           <Title>未核查</Title>
           <Filter>
             <PropertyIsEqualTo>
-              <PropertyName>ADCODE99</PropertyName>
-              <Literal>220000</Literal>
+              <PropertyName>type_id</PropertyName>
+              <Literal>0</Literal>
             </PropertyIsEqualTo>
           </Filter>
           <PolygonSymbolizer>
@@ -36,12 +37,13 @@
             </Stroke>
           </PolygonSymbolizer>
         </Rule>
-        <Rule name="1">
+        <Rule>
+          <Name>1</Name>
           <Title>合法</Title>
           <Filter>
             <PropertyIsEqualTo>
-              <PropertyName>ADCODE99</PropertyName>
-              <Literal>630000</Literal>
+              <PropertyName>type_id</PropertyName>
+              <Literal>1</Literal>
             </PropertyIsEqualTo>
           </Filter>
           <PolygonSymbolizer>
@@ -57,12 +59,13 @@
             </Stroke>
           </PolygonSymbolizer>
         </Rule>
-        <Rule name="2">
+        <Rule>
+          <Name>2</Name>
           <Title>违法</Title>
           <Filter>
             <PropertyIsEqualTo>
-              <PropertyName>ADCODE99</PropertyName>
-              <Literal>450000</Literal>
+              <PropertyName>type_id</PropertyName>
+              <Literal>2</Literal>
             </PropertyIsEqualTo>
           </Filter>
           <PolygonSymbolizer>
@@ -78,12 +81,13 @@
             </Stroke>
           </PolygonSymbolizer>
         </Rule>
-        <Rule name="3">
+        <Rule>
+          <Name>3</Name>
           <Title>实地伪变化</Title>
           <Filter>
             <PropertyIsEqualTo>
-              <PropertyName>ADCODE99</PropertyName>
-              <Literal>130000</Literal>
+              <PropertyName>type_id</PropertyName>
+              <Literal>3</Literal>
             </PropertyIsEqualTo>
           </Filter>
           <PolygonSymbolizer>

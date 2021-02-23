@@ -200,17 +200,14 @@ public class XmlUtil {
             Element featureTypeStyle = userStyle.element("FeatureTypeStyle");
             boolean insert = true;
             List<Element> rules = featureTypeStyle.elements("Rule");
-            for (int i=1;i<rules.size();i++){
+            for (int i=2;i<rules.size();i++){
                 Element rule = rules.get(i);
-                Attribute attribute = rules.get(i).attribute("name");
-
-                String name = attribute.getName();//属性名称
-                String value = attribute.getValue();//属性的值
+                Element name = rule.element("Name");
 //                System.out.println("第"+i+"次属性名称：" + name + "属性值：" + value);
-                if(styleType.getDtype().toString().equals(value)){
+                if(styleType.getDtype().toString().equals(name.getText())){
                     insert = false;
                     Element title = rule.element("Title");
-                    title.setText("测试");
+                    title.setText(styleType.getStyleTypeName());
                     Element polygonSymbolizer = rule.element("PolygonSymbolizer");
                     Element fill = polygonSymbolizer.element("Fill");
                     Element stroke = polygonSymbolizer.element("Stroke");
@@ -250,7 +247,7 @@ public class XmlUtil {
                                     ele.setText("10 10");
                                 }else if("dot".equals(styleType.getLinetype())){
                                     ele.setText("2 3");
-                                }else{
+                                }else if("solid".equals(styleType.getLinetype())){
                                     ele.setText("10 0");
                                 }
                             }
@@ -261,7 +258,8 @@ public class XmlUtil {
             //添加类型
             if(insert){
                 Element rule = featureTypeStyle.addElement("Rule");
-                rule.addAttribute("name",styleType.getDtype().toString());
+                Element name = rule.addElement("Name");
+                name.setText(styleType.getDtype().toString());
                 Element title = rule.addElement("Title");
                 title.setText(styleType.getDtype().toString());
                 Element filter = rule.addElement("Filter");
@@ -269,7 +267,7 @@ public class XmlUtil {
                 Element propertyIsEqualTo = filter.addElement("PropertyIsEqualTo");
                 Element propertyName = propertyIsEqualTo.addElement("PropertyName");
                 Element literal = propertyIsEqualTo.addElement("Literal");
-                propertyName.setText("ADCODE99");
+                propertyName.setText("type_id");
                 literal.setText(styleType.getDtype().toString());
 
                 Element fill = polygonSymbolizer.addElement("Fill");
@@ -298,7 +296,7 @@ public class XmlUtil {
                     strokeDasharray.setText("2 3");
                 } else if("dash".equals(styleType.getLinetype())){
                     strokeDasharray.setText("10 5");
-                } else {
+                } else if("solid".equals(styleType.getLinetype())){
                     strokeDasharray.setText("10 0");
                 }
             }
@@ -365,11 +363,13 @@ public class XmlUtil {
             //开始写入，write方法中包含上面创建的Document对象
             writer.write(doc);
             writer.close();
+            return xmlfile;
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         } finally {
         }
-        return xmlfile;
+
 
     }
 

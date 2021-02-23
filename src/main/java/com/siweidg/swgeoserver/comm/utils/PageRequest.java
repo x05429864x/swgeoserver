@@ -20,7 +20,7 @@ public class PageRequest {
 
     private String sort = "id";
 
-    private Map<String ,Object> params = new HashMap<>();
+    private Map<Object ,Object> params = new HashMap<>();
 
     public int getPageNum() {
         return pageNum;
@@ -51,11 +51,11 @@ public class PageRequest {
         this.sort = sort;
     }
 
-    public Map<String, Object> getParams() {
+    public Map<Object, Object> getParams() {
         return params;
     }
 
-    public void setParams(Map<String, Object> params) {
+    public void setParams(Map<Object, Object> params) {
         this.params = params;
     }
 }

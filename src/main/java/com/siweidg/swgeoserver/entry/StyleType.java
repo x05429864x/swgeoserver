@@ -1,6 +1,11 @@
 package com.siweidg.swgeoserver.entry;
 
-public class StyleType {
+import io.swagger.annotations.ApiModel;
+
+import java.io.Serializable;
+
+@ApiModel(value="工作样式",description="工作样式类")
+public class StyleType implements Serializable {
     private Long id;
 
     private Long dtype;
@@ -16,6 +21,8 @@ public class StyleType {
     private String fillopacity;
 
     private String fillcolor;
+
+    private String styleTypeName;
 
     public Long getId() {
         return id;
@@ -79,5 +86,13 @@ public class StyleType {
 
     public void setFillcolor(String fillcolor) {
         this.fillcolor = fillcolor == null ? null : fillcolor.trim();
+    }
+
+    public String getStyleTypeName() {
+        return styleTypeName;
+    }
+
+    public void setStyleTypeName(String styleTypeName) {
+        this.styleTypeName = styleTypeName;
     }
 }

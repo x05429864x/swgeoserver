@@ -1,5 +1,7 @@
 package com.siweidg.swgeoserver.service;
 
+import com.siweidg.swgeoserver.comm.utils.PageRequest;
+import com.siweidg.swgeoserver.comm.utils.PageResult;
 import com.siweidg.swgeoserver.entry.StyleType;
 
 /**
@@ -22,4 +24,6 @@ public interface StyleTypeService {
     int updateByPrimaryKeySelective(StyleType record);
 
     int updateByPrimaryKey(StyleType record);
+
+    PageResult findPage(PageRequest pageRequest);
 }

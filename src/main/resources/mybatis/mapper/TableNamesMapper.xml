@@ -120,15 +120,15 @@
 
 	<select id="findTableNames" resultMap="TableNamesMap">
 		select t.id,t.name_cn,t.name_en,t.workspace,t.state,t.creater,t.create_time,t.updater,t.update_time,t.remark,t.flag,t.datastore,t.metadata
-		,s.id styleId,s.name_cn styleNameCn,s.name_en styleNameEn from tablenames t left join sys_style s on t.style_id = s.id
-		<trim prefix="WHERE" prefixOverrides="AND |OR ">
+		,s.id styleId,s.name_cn styleNameCn,s.name_en styleNameEn from tablenames t left join sys_style s on t.style_id = s.id where 1=1
 			<if test="state != null">
-				AND t.state = #{state}
+				<foreach collection="state" item="state" open="AND (" close=")" separator="or" >
+					t.state = #{state}
+				</foreach>
 			</if>
 			<if test="nameCn != null">
 				AND t.name_cn = #{nameCn}
 			</if>
-		</trim>
 		order by t.id
 	</select>
 

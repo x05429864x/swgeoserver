@@ -71,11 +71,15 @@ public class UploadController extends BaseController {
     public Object uploadZip(@ApiParam(name = "uploadFile",value = "上传文件",required = true) @RequestPart ( value="uploadFile", required = true) MultipartFile zipFile,
                             @ApiJsonObject(name = "paramMap", value = {
                                     @ApiJsonProperty(key = "workspace", example = "workspace", description = "workspace"),
-                                    @ApiJsonProperty(key = "tableName", example = "tableName", description = "tableName")
+                                    @ApiJsonProperty(key = "tableName", example = "tableName", description = "tableName"),
+                                    @ApiJsonProperty(key = "maxzoom", example = "maxzoom", description = "maxzoom"),
+                                    @ApiJsonProperty(key = "minzoom", example = "minzoom", description = "minzoom")
                             })
                             @RequestParam(required = true) Map<String, String> paramMap) throws Exception {
         String workspace = paramMap.get("workspace");
         String tableNameCn = paramMap.get("tableName");
+        String maxzoom = paramMap.get("maxzoom");
+        String minzoom = paramMap.get("minzoom");
         String creater = paramMap.get("creater");
 //        String flag = paramMap.get("flag");
         uploadFileName = paramMap.get("fileName");// 上传文件
@@ -186,11 +190,11 @@ public class UploadController extends BaseController {
             return ReturnFormat.retParam(2017, null);
         }
         /*****图层对照表信息*****/
-        Object result = uploadF(workspace, fileName, tableNameCn, pathName,creater);
+        Object result = uploadF(workspace, fileName, tableNameCn, pathName,creater,maxzoom,minzoom);
         return result;
     }
 
-    public Object uploadF(String workspace,String fileName,String tablenameCn,String name,String creater) {
+    public Object uploadF(String workspace,String fileName,String tablenameCn,String name,String creater,String maxzoom,String minzoom) {
         TableNames tableNames = new TableNames();
         tableNames.setCreater(creater!=null?Long.parseLong(creater):null);
         tableNames.setCreateTime(new Date());
@@ -201,6 +205,8 @@ public class UploadController extends BaseController {
                 List<Map<Object, Object>> shpList = uploadFileService.readShp2List(extractFilePath+name+"/",tablenameCn);
                 uploadFileService.saveData(shpList,"workdata_base");
                 jsonObject.put("filename",filePath);
+                jsonObject.put("maxzoom",maxzoom);
+                jsonObject.put("minzoom",minzoom);
                 tableNames = tableNamesService.getByNameEn("workdata_base");
                 tableNames.setMetadata(jsonObject);
                 tableNames.setDatastore("work");
@@ -234,6 +240,8 @@ public class UploadController extends BaseController {
                 logger.info("********truncateTable 成功!");
                 uploadFileService.saveData(shpList,"sys_xzqh");
                 jsonObject.put("filename",filePath);
+                jsonObject.put("maxzoom",maxzoom);
+                jsonObject.put("minzoom",minzoom);
                 tableNames = tableNamesService.getByNameEn("sys_xzqh");
                 tableNames.setNameCn(tablenameCn);
                 tableNames.setMetadata(jsonObject);
@@ -252,6 +260,8 @@ public class UploadController extends BaseController {
                 logger.info("********truncateTable 成功!");
                 uploadFileService.saveData(shpList,"sys_jdxz");
                 jsonObject.put("filename",filePath);
+                jsonObject.put("maxzoom",maxzoom);
+                jsonObject.put("minzoom",minzoom);
                 tableNames = tableNamesService.getByNameEn("sys_jdxz");
                 tableNames.setNameCn(tablenameCn);
                 tableNames.setMetadata(jsonObject);
@@ -284,6 +294,8 @@ public class UploadController extends BaseController {
                     int i = uploadFileService.saveData(shpList, "shp_" + shpFileName);
                     logger.info("*********保存数据表成功");
                     jsonObject.put("filename",filePath);
+                    jsonObject.put("maxzoom",maxzoom);
+                    jsonObject.put("minzoom",minzoom);
                     tableNames.setState(0L);
                     tableNames.setWorkspace(workspace);
                     tableNames.setNameCn(tablenameCn);
@@ -309,6 +321,8 @@ public class UploadController extends BaseController {
                     return ReturnFormat.retParam(2030, t);
                 }
                 jsonObject.put("filename",filePath);
+                jsonObject.put("maxzoom",maxzoom);
+                jsonObject.put("minzoom",minzoom);
                 tableNames.setState(0L);
                 tableNames.setWorkspace(workspace);
                 tableNames.setNameCn(tablenameCn);

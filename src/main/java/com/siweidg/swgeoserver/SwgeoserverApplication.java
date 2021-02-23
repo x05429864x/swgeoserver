@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * 打jar包则不需要
  */
 @SpringBootApplication
-@EnableTransactionManagement // 启注解事务管理，等同于xml配置方式的 <tx:annotation-driven />
+@EnableTransactionManagement //开启注解事务管理，等同于xml配置方式的 <tx:annotation-driven />
 //@ComponentScan({"it.geosolutions.swgeoserver.config"})
 @MapperScan("com.siweidg.swgeoserver.dao")
 public class SwgeoserverApplication extends SpringBootServletInitializer {

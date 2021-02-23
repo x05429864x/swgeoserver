@@ -140,7 +140,9 @@ public class TableNamesController extends BaseController {
                     tableNames.setState(1l);
                     tableNames.setCreateTime(new Date());
                     tableNames.setMetadata(jsonObject);
-                    tableNames.setStyleId(Long.parseLong(styleId));
+                    if(styleId!=null){
+                        tableNames.setStyleId(Long.parseLong(styleId));
+                    }
                     tableNamesService.updateTableNames(tableNames);
                     return ReturnFormat.retParam(0,tableNames);
                 }
