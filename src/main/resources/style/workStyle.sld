@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
+<?xml version="1.0" encoding="UTF-8"?>
+
+<StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:sld="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" version="1.0.0">
   <NamedLayer>
     <UserStyle>
       <FeatureTypeStyle>
@@ -6,14 +8,34 @@
           <PolygonSymbolizer>
             <Title>默认</Title>
             <Fill>
-              <CssParameter name="fill">#CCCCCC</CssParameter>
+              <CssParameter name="fill">#000000</CssParameter>
               <CssParameter name="fill-opacity">0</CssParameter>
             </Fill>
             <Stroke>
               <CssParameter name="stroke">#000000</CssParameter>
               <CssParameter name="stroke-width">1</CssParameter>
+              <CssParameter name="stroke-opacity">0</CssParameter>
             </Stroke>
           </PolygonSymbolizer>
+          <TextSymbolizer>
+            <Label>
+              <PropertyName>bianhao</PropertyName>
+            </Label>
+            <Font>
+              <CssParameter name="font-family">微软雅黑</CssParameter>
+              <CssParameter name="font-size">14</CssParameter>
+              <CssParameter name="font-style">Normal</CssParameter>
+              <CssParameter name="font-weight">normal</CssParameter>
+            </Font>
+            <LabelPlacement>
+              <PointPlacement>
+                <AnchorPoint>
+                  <AnchorPointX>0.5</AnchorPointX>
+                  <AnchorPointY>0.5</AnchorPointY>
+                </AnchorPoint>
+              </PointPlacement>
+            </LabelPlacement>
+          </TextSymbolizer>
         </Rule>
         <Rule>
           <Name>0</Name>
@@ -26,12 +48,12 @@
           </Filter>
           <PolygonSymbolizer>
             <Fill>
-              <CssParameter name="fill">#FFFF00</CssParameter>
-              <CssParameter name="fill-opacity">1</CssParameter>
+              <CssParameter name="fill">#000000</CssParameter>
+              <CssParameter name="fill-opacity">0.0</CssParameter>
             </Fill>
             <Stroke>
               <CssParameter name="stroke">#000000</CssParameter>
-              <CssParameter name="stroke-width">1</CssParameter>
+              <CssParameter name="stroke-width">1.0</CssParameter>
               <CssParameter name="stroke-opacity">1</CssParameter>
               <CssParameter name="stroke-dasharray">10 0</CssParameter>
             </Stroke>
@@ -48,8 +70,8 @@
           </Filter>
           <PolygonSymbolizer>
             <Fill>
-              <CssParameter name="fill">#00CC33</CssParameter>
-              <CssParameter name="fill-opacity">1</CssParameter>
+              <CssParameter name="fill">#000000</CssParameter>
+              <CssParameter name="fill-opacity">0</CssParameter>
             </Fill>
             <Stroke>
               <CssParameter name="stroke">#000000</CssParameter>
@@ -70,14 +92,14 @@
           </Filter>
           <PolygonSymbolizer>
             <Fill>
-              <CssParameter name="fill">#FF0000</CssParameter>
-              <CssParameter name="fill-opacity">1</CssParameter>
+              <CssParameter name="fill">#000000</CssParameter>
+              <CssParameter name="fill-opacity">0</CssParameter>
             </Fill>
             <Stroke>
-              <CssParameter name="stroke">#000000</CssParameter>
-              <CssParameter name="stroke-width">1</CssParameter>
+              <CssParameter name="stroke">##000000</CssParameter>
+              <CssParameter name="stroke-width">2</CssParameter>
               <CssParameter name="stroke-opacity">1</CssParameter>
-              <CssParameter name="stroke-dasharray">10 10</CssParameter>
+              <CssParameter name="stroke-dasharray">10 0</CssParameter>
             </Stroke>
           </PolygonSymbolizer>
         </Rule>
@@ -92,14 +114,14 @@
           </Filter>
           <PolygonSymbolizer>
             <Fill>
-              <CssParameter name="fill">#0000ff</CssParameter>
-              <CssParameter name="fill-opacity">1</CssParameter>
+              <CssParameter name="fill">#000000</CssParameter>
+              <CssParameter name="fill-opacity">0</CssParameter>
             </Fill>
             <Stroke>
               <CssParameter name="stroke">#000000</CssParameter>
               <CssParameter name="stroke-width">1</CssParameter>
               <CssParameter name="stroke-opacity">1</CssParameter>
-              <CssParameter name="stroke-dasharray">10 10</CssParameter>
+              <CssParameter name="stroke-dasharray">10 0</CssParameter>
             </Stroke>
           </PolygonSymbolizer>
         </Rule>

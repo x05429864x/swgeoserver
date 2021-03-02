@@ -54,6 +54,9 @@ public class UploadController extends BaseController {
     @Value("${upload_extract_path}")
     private String extractFilePath;
 
+    @Value("${img_path}")
+    private String imgPath;
+
 
     static Map<String, Object> allMap = null;
 
@@ -64,6 +67,108 @@ public class UploadController extends BaseController {
     private UploadFileService uploadFileService;
 
 
+    @ApiOperation(value = "上传照片", notes = "upload zip img", response = String.class)
+    @RequestMapping(value = "/uploadImg", produces = "application/json;charset=UTF-8", method = RequestMethod.POST)
+    @Transactional
+    public Object uploadImg(@ApiParam(name = "uploadFile",value = "上传文件",required = true)
+                                @RequestPart ( value="uploadFile", required = true) MultipartFile zipFile,
+                                @RequestParam(required = true) Map<String, String> paramMap) throws Exception {
+        uploadFileName = paramMap.get("fileName");// 上传文件
+        String lastModifyTime = paramMap.get("lastModifyTime");// 最后修改时间
+        String fileSize = paramMap.get("fileSize");
+        RandomAccessFile randomAccessfile = null;
+        String suffix = uploadFileName.substring(uploadFileName.lastIndexOf(".") + 1);
+
+        File uploadDir = new File(uploadFilePath);
+        if  (!uploadDir.exists()  && !uploadDir.isDirectory()){
+            uploadDir.mkdir();
+        }
+
+        File extractDir = new File(extractFilePath);
+        if  (!extractDir.exists()  && !extractDir.isDirectory()){
+            extractDir.mkdir();
+        }
+
+        /**
+         * 记录当前文件大小，用于判断文件是否上传完成
+         */
+        long currentFileLength = 0;
+        long startTime = System.currentTimeMillis();
+        String pathName = FileUtils.getFileNameNoEx(uploadFileName);
+        long totalSize = zipFile.getSize();
+        if (null != fileSize && !fileSize.equals("")) {
+            totalSize = Long.parseLong(fileSize);
+        }
+
+        File newfile = new File(uploadFilePath + uploadFileName + "." + lastModifyTime);
+        // 存在文件
+        if (newfile.exists()) {
+            randomAccessfile = new RandomAccessFile(newfile, "rw");
+        } else {
+            // 不存在文件，根据文件标识创建文件
+            randomAccessfile = new RandomAccessFile(uploadFilePath + uploadFileName + "." + lastModifyTime, "rw");
+        }
+        // 开始文件传输
+        InputStream in = new ByteArrayInputStream(zipFile.getBytes());
+        randomAccessfile.seek(randomAccessfile.length());
+        byte b[] = new byte[1024];
+        int n;
+        while ((n = in.read(b)) != -1) {
+            randomAccessfile.write(b, 0, n);
+        }
+        currentFileLength = randomAccessfile.length();
+
+        // 关闭文件
+        closeRandomAccessFile(randomAccessfile);
+        randomAccessfile = null;
+        if (currentFileLength < totalSize) {
+            return ReturnFormat.retParam(10000, null);
+        }
+        List<String> list = new ArrayList();
+        if (currentFileLength == totalSize) {
+            File oldFile = new File(uploadFilePath + uploadFileName + "." + lastModifyTime);
+            File newFile = new File(uploadFilePath + uploadFileName);
+            if (!oldFile.exists()) {// 文件重复返回提示
+                return ReturnFormat.retParam(2013, null);
+            }
+            if (!oldFile.renameTo(newFile)) {
+                oldFile.delete();
+            }
+            in.close();
+            long endTime = System.currentTimeMillis();
+            System.out.println("文件上传运行时间：" + (endTime - startTime) + "ms");
+
+//            String suffix = uploadFileName.substring(uploadFileName.lastIndexOf(".") + 1).toUpperCase();
+//            String newFileName = uploadFileName.substring(0, uploadFileName.lastIndexOf("."));
+            //=============解压============：创建ZipFile指向磁盘上的.zip文件
+//            ZipFile zFile = new ZipFile(newFile);
+//            zFile.setFileNameCharset("UTF-8");
+
+            long extractStart= System.currentTimeMillis();
+            //解压文件
+//            zFile.extractAll(extractFilePath+pathName);
+
+
+            try {
+                if ("ZIP".equalsIgnoreCase(suffix)) {
+                    UnZipAnRar.unZip(newFile, imgPath+pathName);
+//                CompressFileUtils.unZipFiles(uploadFilePath + uploadFileName, filePath);
+                } else if ("RAR".equalsIgnoreCase(suffix)) {
+                    UnZipAnRar.unRar(newFile, imgPath+pathName);
+//                CompressFileUtils.unRarFile(uploadFilePath + uploadFileName, filePath);
+                } else {
+                    return ReturnFormat.retParam(2019, null);
+                }
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+
+            long extractEnd = System.currentTimeMillis();
+            System.out.println("解压运行时间：" + (extractEnd - extractStart) + "ms");
+        }
+        /*******上传解压结束*******/
+        return ReturnFormat.retParam(0, null);
+    }
 
     @ApiOperation(value = "上传zip导入数据库", notes = "upload Zip to the database", response = String.class)
     @RequestMapping(value = "/upload", produces = "application/json;charset=UTF-8", method = RequestMethod.POST)

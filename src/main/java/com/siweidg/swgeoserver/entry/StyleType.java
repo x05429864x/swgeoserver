@@ -12,13 +12,13 @@ public class StyleType implements Serializable {
 
     private String linetype;
 
-    private String lineopacity;
+    private Double lineopacity;
 
-    private String linewidth;
+    private Double linewidth;
 
     private String linecolor;
 
-    private String fillopacity;
+    private Double fillopacity;
 
     private String fillcolor;
 
@@ -48,19 +48,19 @@ public class StyleType implements Serializable {
         this.linetype = linetype == null ? null : linetype.trim();
     }
 
-    public String getLineopacity() {
+    public Double getLineopacity() {
         return lineopacity;
     }
 
-    public void setLineopacity(String lineopacity) {
-        this.lineopacity = lineopacity == null ? null : lineopacity.trim();
+    public void setLineopacity(Double lineopacity) {
+        this.lineopacity = lineopacity;
     }
 
-    public String getLinewidth() {
+    public Double getLinewidth() {
         return linewidth;
     }
 
-    public void setLinewidth(String linewidth) {
+    public void setLinewidth(Double linewidth) {
         this.linewidth = linewidth;
     }
 
@@ -72,12 +72,12 @@ public class StyleType implements Serializable {
         this.linecolor = linecolor == null ? null : linecolor.trim();
     }
 
-    public String getFillopacity() {
+    public Double getFillopacity() {
         return fillopacity;
     }
 
-    public void setFillopacity(String fillopacity) {
-        this.fillopacity = fillopacity == null ? null : fillopacity.trim();
+    public void setFillopacity(Double fillopacity) {
+        this.fillopacity = fillopacity;
     }
 
     public String getFillcolor() {

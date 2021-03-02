@@ -35,11 +35,11 @@ public class XmlUtil {
         StyleType style = new StyleType();
         style.setDtype(6l);
         style.setFillcolor("#CCCCCC");
-        style.setFillopacity("0.5");
+        style.setFillopacity(0.5);
         style.setLinetype("dash");
         style.setLinecolor("#FF6600");
-        style.setLinewidth("2");
-        style.setLineopacity("0.5");
+        style.setLinewidth(2d);
+        style.setLineopacity(0.5);
         modifyStyle("E:\\usr\\local\\shpfile\\siweidg_swgeoserver_apache\\style\\",style);
     }
 
@@ -146,10 +146,10 @@ public class XmlUtil {
             //根据参数设置样式值
 
             fillColer.setText(styleType.getFillcolor());
-            fillOpacity.setText(styleType.getFillopacity());
-            strokeWidth.setText(styleType.getLinewidth());
-            strokeColer.setText(styleType.getLinecolor());
-            strokeOpacity.setText(styleType.getLineopacity());
+            fillOpacity.setText(styleType.getFillopacity().toString());
+            strokeWidth.setText(styleType.getLinewidth().toString());
+            strokeColer.setText(styleType.getLinecolor().toString());
+            strokeOpacity.setText(styleType.getLineopacity().toString());
 
             if("dot".equals(styleType.getLinetype())){
                 strokeDasharray.setText("2 3");
@@ -200,7 +200,7 @@ public class XmlUtil {
             Element featureTypeStyle = userStyle.element("FeatureTypeStyle");
             boolean insert = true;
             List<Element> rules = featureTypeStyle.elements("Rule");
-            for (int i=2;i<rules.size();i++){
+            for (int i=1;i<rules.size();i++){
                 Element rule = rules.get(i);
                 Element name = rule.element("Name");
 //                System.out.println("第"+i+"次属性名称：" + name + "属性值：" + value);
@@ -217,30 +217,30 @@ public class XmlUtil {
 //                        System.out.println(ele.getName() + ": " + ele.getText());
                         List<Attribute> attributeList = ele.attributes();
                         for (Attribute attr : attributeList) {
-                            System.out.println(attr.getName() + ": " + attr.getValue());
+//                            System.out.println(attr.getName() + ": " + attr.getValue());
                             if(attr.getValue().equals("fill")){
                                 ele.setText(styleType.getFillcolor());
                             }
                             if(attr.getValue().equals("fill-opacity")){
-                                ele.setText(styleType.getFillopacity());
+                                ele.setText(styleType.getFillopacity().toString());
                             }
                         }
                     }
                     //边框线
                     List<Element> strokeElement = stroke.elements();
                     for (Element ele:strokeElement){
-                        System.out.println(ele.getName() + ": " + ele.getText());
+//                        System.out.println(ele.getName() + ": " + ele.getText());
                         List<Attribute> attributeList = ele.attributes();
                         for (Attribute attr : attributeList) {
-                            System.out.println(attr.getName() + ": " + attr.getValue());
+//                            System.out.println(attr.getName() + ": " + attr.getValue());
                             if(attr.getValue().equals("stroke")){
                                 ele.setText(styleType.getLinecolor());
                             }
                             if(attr.getValue().equals("stroke-width")){
-                                ele.setText(styleType.getLinewidth());
+                                ele.setText(styleType.getLinewidth().toString());
                             }
                             if(attr.getValue().equals("stroke-opacity")){
-                                ele.setText(styleType.getLineopacity());
+                                ele.setText(styleType.getLineopacity().toString());
                             }
                             if(attr.getValue().equals("stroke-dasharray")){
                                 if("dash".equals(styleType.getLinetype())){
@@ -276,7 +276,7 @@ public class XmlUtil {
                 fillColor.addAttribute("name", "fill");
                 fillOpacity.addAttribute("name","fill-opacity");
                 fillColor.setText(styleType.getFillcolor());
-                fillOpacity.setText(styleType.getFillopacity());
+                fillOpacity.setText(styleType.getFillopacity().toString());
 
                 Element stroke = polygonSymbolizer.addElement("Stroke");
                 Element strokeWidth = stroke.addElement("CssParameter");
@@ -289,9 +289,9 @@ public class XmlUtil {
                 strokeOpacity.addAttribute("name", "stroke-opacity");
                 strokeDasharray.addAttribute("name", "stroke-dasharray");
 
-                strokeWidth.setText(styleType.getLinewidth());
+                strokeWidth.setText(styleType.getLinewidth().toString());
                 strokeColer.setText(styleType.getLinecolor());
-                strokeOpacity.setText(styleType.getLineopacity());
+                strokeOpacity.setText(styleType.getLineopacity().toString());
                 if("dot".equals(styleType.getLinetype())){
                     strokeDasharray.setText("2 3");
                 } else if("dash".equals(styleType.getLinetype())){
