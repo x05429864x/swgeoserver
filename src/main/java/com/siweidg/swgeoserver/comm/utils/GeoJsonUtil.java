@@ -92,7 +92,6 @@ public class GeoJsonUtil {
 		try {
 			lst = (List<Describe>) objectMapper.readValue(str, javaType);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return lst;

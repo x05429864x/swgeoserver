@@ -10,7 +10,7 @@ app:
 upload_file_path: /mnt/nfs/home/mbtiles/upload/
 upload_extract_path: /mnt/nfs/home/mbtiles/extract/
 geoserver_style_path: /mnt/nfs/home/mbtiles/style/
-img_path: /mnt/nfs/home/mbtiles/img/
+img_path: /mnt/nfs/home/images/workdata/
 ##image_path: /usr/local/shpfile/siweidg_swgeoserver_apache/image/
 
 mybatis:

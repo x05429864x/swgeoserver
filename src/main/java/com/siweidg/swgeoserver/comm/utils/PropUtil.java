@@ -123,7 +123,6 @@ public class PropUtil {
             Element maxy = nativeBoundingBox.element("maxy");
             Iterator it = bookStore.elementIterator();
         } catch (DocumentException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();

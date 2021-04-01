@@ -50,7 +50,6 @@ public class DOM4JTest {
                 System.out.println("=====结束遍历某一本书=====");
             }
         } catch (DocumentException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();

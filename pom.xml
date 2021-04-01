@@ -146,7 +146,7 @@
             <version>1.2.5</version>
         </dependency>
 
-        <!-- Geotools Charsets用到 -->
+        <!-- Geotools Charsets -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -165,7 +165,7 @@
             <artifactId>dom4j</artifactId>
             <version>1.6.1</version>
         </dependency>
-        <!-- 压缩未用到 -->
+        <!-- 压缩用到 -->
         <dependency>
             <groupId>com.github.junrar</groupId>
             <artifactId>junrar</artifactId>

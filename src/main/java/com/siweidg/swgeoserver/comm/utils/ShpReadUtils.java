@@ -44,7 +44,6 @@ public class ShpReadUtils {
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} 
 		long endTime=System.currentTimeMillis();
@@ -623,10 +622,8 @@ public class ShpReadUtils {
 			}
 			System.out.println(style);
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

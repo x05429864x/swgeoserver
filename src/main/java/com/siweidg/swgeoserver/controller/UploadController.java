@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -69,7 +70,6 @@ public class UploadController extends BaseController {
 
     @ApiOperation(value = "上传照片", notes = "upload zip img", response = String.class)
     @RequestMapping(value = "/uploadImg", produces = "application/json;charset=UTF-8", method = RequestMethod.POST)
-    @Transactional
     public Object uploadImg(@ApiParam(name = "uploadFile",value = "上传文件",required = true)
                                 @RequestPart ( value="uploadFile", required = true) MultipartFile zipFile,
                                 @RequestParam(required = true) Map<String, String> paramMap) throws Exception {
@@ -177,6 +177,8 @@ public class UploadController extends BaseController {
                             @ApiJsonObject(name = "paramMap", value = {
                                     @ApiJsonProperty(key = "workspace", example = "workspace", description = "workspace"),
                                     @ApiJsonProperty(key = "tableName", example = "tableName", description = "tableName"),
+                                    @ApiJsonProperty(key = "fileSize", example = "fileSize", description = "fileSize"),
+                                    @ApiJsonProperty(key = "lastModifyTime", example = "lastModifyTime", description = "lastModifyTime"),
                                     @ApiJsonProperty(key = "maxzoom", example = "maxzoom", description = "maxzoom"),
                                     @ApiJsonProperty(key = "minzoom", example = "minzoom", description = "minzoom")
                             })
@@ -489,16 +491,22 @@ public class UploadController extends BaseController {
 
     /**
      * 获取已上传的文件大小
-     *
+     * flag : file/img
      */
     @RequestMapping(value = "/getChunkedFileSize", produces = "application/json;charset=UTF-8", method = RequestMethod.POST)
     @ResponseBody
-    public Object getChunkedFileSize(@RequestParam String filename, @RequestParam String lastModifyTime)
+    public Object getChunkedFileSize(@RequestParam String filename, @RequestParam String lastModifyTime,@RequestParam String flag)
             throws Exception {
         Object obj = new Object();
         uploadFileName = new String(filename.getBytes("ISO-8859-1"), "UTF-8");
         // String lastModifyTime = request.getParameter("lastModifyTime");
-        File file = new File(uploadFilePath + uploadFileName + "." + lastModifyTime);
+        String path = "";
+        if(flag.equalsIgnoreCase("img")){
+            path = imgPath;
+        }else if(flag.equalsIgnoreCase("file")){
+            path = uploadFilePath;
+        }
+        File file = new File(path + uploadFileName + "." + lastModifyTime);
         if (file.exists()) {
             obj = ReturnFormat.retParam(0, file.length());
         } else {
@@ -506,6 +514,8 @@ public class UploadController extends BaseController {
         }
         return obj;
     }
+
+
 
     /**
      * 关闭随机访问文件

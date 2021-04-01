@@ -207,7 +207,6 @@ public class Geotools {
                             //事务回归
                             session.rollback();
                         } catch (IOException e) {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                     }
@@ -738,7 +737,6 @@ public class Geotools {
             com.siweidg.swgeoserver.comm.utils.FileUtils.delFolder(shpPath);
             logger.info("创建成功！");
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return postgisDatasore;
@@ -784,7 +782,6 @@ public class Geotools {
             ds.dispose();
             System.out.println("导入成功");
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         catch (FactoryException e) {
