@@ -26,7 +26,7 @@ public class GeoUtil extends BaseGeoserverREST {
                     .append(":").append(layerName).append("&bbox=").append(bbox).append("&width=768&height=390&srs=")
                     .append(crs).append("&format=application/openlayers3");
 //        url+="/"+workspace+"/wms?service=WMS&version=1.1.0&request=GetMap&layers="+workspace+":"+layerName+"&bbox="+minX+minY+maxX+maxY+"&width=768&height=390&srs=EPSG:4230&format=application/openlayers3";
-            System.out.println(sBuffer);
+//            System.out.println(sBuffer);
             return sBuffer.toString();
         } catch (Exception e) {
             e.printStackTrace();
@@ -50,7 +50,7 @@ public class GeoUtil extends BaseGeoserverREST {
             sBuffer.append(bbox)
                     .append(","+crs);
 //        url+="/"+workspace+"/wms?service=WMS&version=1.1.0&request=GetMap&layers="+workspace+":"+layerName+"&bbox="+minX+minY+maxX+maxY+"&width=768&height=390&srs=EPSG:4230&format=application/openlayers3";
-            System.out.println(sBuffer);
+//            System.out.println(sBuffer);
             return sBuffer.toString();
         } catch (Exception e) {
             e.printStackTrace();

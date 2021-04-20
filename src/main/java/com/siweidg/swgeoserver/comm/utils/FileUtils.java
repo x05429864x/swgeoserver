@@ -167,7 +167,7 @@ public class FileUtils {
 				int length;
 				while ((byteread = inStream.read(buffer)) != -1) {
 					bytesum += byteread; // 字节数 文件大小
-					System.out.println(bytesum);
+//					System.out.println(bytesum);
 					fs.write(buffer, 0, byteread);
 				}
 				inStream.close();
@@ -326,7 +326,7 @@ public class FileUtils {
 				}
 //				list.addAll(getAllFile(file.getAbsolutePath(),isAddDirectory));
 			} else {
-                System.out.println(file.getName()+"："+String.valueOf(file.length()));
+//                System.out.println(file.getName()+"："+String.valueOf(file.length()));
 				list.add(file.getAbsolutePath()+"："+String.valueOf(file.length()));
 			}
 		}
@@ -374,7 +374,7 @@ public class FileUtils {
                 }
                 list.addAll(getAllFile(file.getAbsolutePath(),isAddDirectory));
             } else {
-                System.out.println(file.getName());
+//                System.out.println(file.getName());
                 if("mbtiles".equals(getExtensionName(file.getName()))||"db".equals(getExtensionName(file.getName()))||"shp".equals(getExtensionName(file.getName()))||"tif".equals(getExtensionName(file.getName()))){
 					list.add(file.getName());
 					break;

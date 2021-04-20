@@ -13,9 +13,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional()
+@Transactional
 public class UploadFileServiceImpl implements UploadFileService {
 
     private static final Logger logger = Logger.getLogger(UploadFileServiceImpl.class);
@@ -48,7 +49,7 @@ public class UploadFileServiceImpl implements UploadFileService {
                     fName+="cpg";
                     File f1 = new File(file+"/"+fName);
                     code = ShpReadUtils.readFileByChars(f1);
-                    logger.info("-----------------------读取.shp完成,code为："+code);
+//                    logger.info("-----------------------读取.shp完成,code为："+code);
                     list =  ShpReadUtils.readSHP(f.getAbsolutePath(),code);
 
                 }
@@ -61,6 +62,7 @@ public class UploadFileServiceImpl implements UploadFileService {
     @Override
     public int saveData(List<Map<Object, Object>> list,String tableName) {
         List<Object> valueList = new ArrayList<Object>();
+
         // 拼接列名
         List<String> key = new ArrayList<String>();
         for (Map<Object, Object> att : list) {
@@ -74,13 +76,13 @@ public class UploadFileServiceImpl implements UploadFileService {
             StringBuffer value = new StringBuffer();
 
             for (Map.Entry<Object, Object> entry : att.entrySet()) {
-                if(entry.getValue()==null){
-                    value.append((char[]) null+ ",");
-                }else {
-                    value.append("'" + String.valueOf(entry.getValue()) + "',");
+                if(!(entry.getKey().toString().toLowerCase()).equals("status")){
+                    if(entry.getValue()==null){
+                        value.append((char[]) null+ ",");
+                    }else {
+                        value.append("'" + String.valueOf(entry.getValue()) + "',");
+                    }
                 }
-
-
             }
             valueList.add("("+value.substring(0,value.length() -1)+")");
 //            break;

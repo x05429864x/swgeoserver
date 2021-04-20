@@ -421,7 +421,7 @@ public class GeoServerRESTReader {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("### Retrieving featuretypes from " + url);
         }
-        System.out.println(url);
+//        System.out.println(url);
         return RESTFeatureTypeList.build(load(url));
     }
 

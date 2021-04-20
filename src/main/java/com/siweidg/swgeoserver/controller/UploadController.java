@@ -172,7 +172,7 @@ public class UploadController extends BaseController {
 
     @ApiOperation(value = "上传zip导入数据库", notes = "upload Zip to the database", response = String.class)
     @RequestMapping(value = "/upload", produces = "application/json;charset=UTF-8", method = RequestMethod.POST)
-    @Transactional
+//    @Transactional
     public Object uploadZip(@ApiParam(name = "uploadFile",value = "上传文件",required = true) @RequestPart ( value="uploadFile", required = true) MultipartFile zipFile,
                             @ApiJsonObject(name = "paramMap", value = {
                                     @ApiJsonProperty(key = "workspace", example = "workspace", description = "workspace"),
@@ -217,7 +217,7 @@ public class UploadController extends BaseController {
             totalSize = Long.parseLong(fileSize);
         }
 
-        System.out.println(zipFile.getBytes());
+//        System.out.println(zipFile.getBytes());
         File newfile = new File(uploadFilePath + uploadFileName + "." + lastModifyTime);
         // 存在文件
         if (newfile.exists()) {

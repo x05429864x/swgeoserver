@@ -177,7 +177,7 @@ public class ShpReadUtils {
 					new GeometryFactory());
 			while (r.hasNext()) {
 				Geometry shape = (Geometry) r.nextRecord().shape(); // com.vividsolutions.jts.geom.Geometry;
-				System.out.println(shape.toString());
+//				System.out.println(shape.toString());
 			}
 			r.close();
 		} catch (Exception e) {
@@ -523,6 +523,8 @@ public class ShpReadUtils {
 							info2.put(attributeName,attribute);
 						} else if(attributeName.equalsIgnoreCase("the_geom")||attributeName.equalsIgnoreCase("geom")){
 							data.put(attributeName, "SRID=4326;"+attribute);
+						}else if(attributeName.equalsIgnoreCase("status")){
+
 						}else{
 							data.put(attributeName, attribute);
 						}
@@ -575,7 +577,7 @@ public class ShpReadUtils {
 	                    Object value = entry[i];  
 	                    String name = title.toString(); // column  
 	                    String info = value.toString(); // value  
-	                    System.out.println("name : "+ name + " info : "+info);
+//	                    System.out.println("name : "+ name + " info : "+info);
 	                }  
 	            } catch (Exception e) {  
 	                e.printStackTrace();  
@@ -616,11 +618,11 @@ public class ShpReadUtils {
 						Expression opacity = stroke.getOpacity();
 						Expression width = stroke.getWidth();
 						Expression color = stroke.getColor();
-						System.out.println(opacity+";" + width + ";"+ color);
+//						System.out.println(opacity+";" + width + ";"+ color);
 					}
 				}
 			}
-			System.out.println(style);
+//			System.out.println(style);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

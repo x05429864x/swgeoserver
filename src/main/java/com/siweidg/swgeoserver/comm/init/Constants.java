@@ -74,12 +74,12 @@ public final class Constants {
 		UPDATE("update"),INSERT("insert"),DELETE("delete"),SELECT("select");
 		public String name;
 		private LOG_TYPE(String name) {
-			// TODO Auto-generated constructor stub
 			this.name =  name;
 		}
 	}
 	
 	public Constants(ServletConfig servletConfig) {
 	}
-	
+
+
 }

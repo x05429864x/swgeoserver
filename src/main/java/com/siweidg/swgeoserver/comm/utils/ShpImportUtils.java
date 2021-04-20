@@ -66,7 +66,7 @@ public class ShpImportUtils {
             featureWriter.close();
             shapefileDataStore.dispose();
             dataStore.dispose();
-            LOGGER.info("\nshp导入postgis成功");
+//            LOGGER.info("\nshp导入postgis成功");
             return "导入postgis成功";
         }catch (Exception e){
             LOGGER.error(e.getMessage());
@@ -112,7 +112,7 @@ public class ShpImportUtils {
             featureWriter.close();
             shapefileDataStore.dispose();
             dataStore.dispose();
-            LOGGER.info("\nshp导入postgis成功");
+//            LOGGER.info("\nshp导入postgis成功");
             return "导入postgis成功";
         }catch (Exception e){
             LOGGER.error(e.getMessage());

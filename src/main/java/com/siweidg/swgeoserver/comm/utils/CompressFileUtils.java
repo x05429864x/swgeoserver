@@ -93,7 +93,7 @@ public class CompressFileUtils {
 			a = new Archive(new FileVolumeManager(new File(srcRarPath)));
 			if (a != null) {
 				a.getMainHeader().print(); // 打印文件信息.
-				System.out.println(a.getMainHeader().getEncryptVersion());
+//				System.out.println(a.getMainHeader().getEncryptVersion());
 				FileHeader fh = a.nextFileHeader();
 				while (fh != null) {
 					if (fh.isDirectory()) { // 文件夹

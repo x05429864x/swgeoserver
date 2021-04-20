@@ -1,6 +1,7 @@
 package com.siweidg.swgeoserver.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.siweidg.swgeoserver.comm.constants.LayerConstant;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -171,16 +172,34 @@ public class TableNamesController extends BaseController {
             "  \"nameEn\":\"英文名称\"\n" +
             "  \"style\":\"样式\",\n" +
             "  \"styleId\":\"样式id\"\n" +
+            "  \"state\":\"状态\"\n" +
             "}",required = true)@RequestBody(required = true) Map<String, String> updateParams){
         String ws = updateParams.get("workspace");
         String style = updateParams.get("style");
         String styleId =  updateParams.get("styleId");
         String layerName = updateParams.get("nameEn");
         String layerNameCn = updateParams.get("nameCn");
+        String state = updateParams.get("state");
 //        List allList = new ArrayList();
-        //判断图层是否已经存在，不存在则创建并发布
+        //更新前先查询中文名称是否存在 存在则返回提示 禁止更新
+        if(layerNameCn!=null){
+            TableNames t = tableNamesService.getByNameCn(layerNameCn);
+            if(t!=null){
+                return ReturnFormat.retParam(2032,t);
+            }
+        }
 
+        //如果图层是已上传未发布 则只更新图层名
+        if(state.equals(String.valueOf(LayerConstant.StateEnum.AVAILABLE.getCode()))){
+            //原有图层查询 更新图层名
+            TableNames tableNames = tableNamesService.getByNameEn(layerName);
+            tableNames.setNameCn(layerNameCn);
+            tableNamesService.updateTableNames(tableNames);
+            return ReturnFormat.retParam(0,tableNames);
+        }
+        //已发布逻辑
         try{
+            //判断图层是否已经存在，不存在则创建并发布
             RESTLayer layer = BaseGeoserverREST.manager.getReader().getLayer(ws, layerName);
             if(layer == null){
                 System.out.println("图层不存在:" + layerName);
@@ -203,7 +222,7 @@ public class TableNamesController extends BaseController {
                     System.out.println("publish : " + publish);
                 }else{
                     boolean publish = BaseGeoserverREST.manager.getPublisher().configureLayer(ws, layerName, layerEncoder);
-                    logger.info("===============================：  "+publish);
+//                    logger.info("===============================：  "+publish);
                 }
 
 
@@ -230,7 +249,7 @@ public class TableNamesController extends BaseController {
                 jsonObject.put("center",center);
                 jsonObject.put("bounds",bbox);
 //                String json = JSON.toJSONString(map);
-                tableNames.setState(1l);
+//                tableNames.setState(1l);
                 tableNames.setNameCn(layerNameCn);
                 tableNames.setUpdateTime(new Date());
                 tableNames.setMetadata(jsonObject);
@@ -402,34 +421,50 @@ public class TableNamesController extends BaseController {
         List<TableNames> list = tableNamesService.getByIds(ids);
         boolean b = false;
         for (TableNames tableNames:list){
+            //未发布图层删除逻辑
+            if(tableNames.getState()== LayerConstant.StateEnum.AVAILABLE.getCode()){
+                //矢量数据删除数据库表
+                if(tableNames.getFlag()==LayerConstant.FlagEnum.VECTOR.getCode()){
+                    tableNamesService.delete(tableNames.getId());
+                    tableNamesService.dropTable(tableNames.getNameEn());
+                }else{
+                    //栅格数据删除
+                    tableNamesService.delete(tableNames.getId());
+                }
+            }else{
+                //已发布图层删除逻辑
+                //矢量数据删除数据库表
+                if(tableNames.getFlag()==LayerConstant.FlagEnum.VECTOR.getCode()){
+                    b = BaseGeoserverREST.publisher.removeLayer(tableNames.getWorkspace(), tableNames.getNameEn());
+                    System.out.println("删除矢量:"+tableNames.getNameEn()+","+b);
+                    if(b){
+                        tableNamesService.delete(tableNames.getId());
+                        tableNamesService.dropTable(tableNames.getNameEn());
+                    }else{
+                        return ReturnFormat.retParam(2033,tableNames.getNameCn());
+                    }
+
+                }else{
+                    //栅格数据删除
+                    b = BaseGeoserverREST.publisher.removeCoverageStore(tableNames.getWorkspace(), tableNames.getDatastore(),true);
+                    System.out.println("删除栅格:"+tableNames.getNameEn()+","+b);
+                    if(b){
+                        tableNamesService.delete(tableNames.getId());
+                    }else{
+                        return ReturnFormat.retParam(2033,tableNames.getNameCn());
+                    }
+                }
+            }
+
+
             //删除解压文件
             Object metadata = tableNames.getMetadata();
             JSONObject jsonObject = JSONObject.parseObject(metadata.toString());
+
             if(jsonObject.get("filename")!=null){
                 String[] filenames = jsonObject.get("filename").toString().split("/");
                 //删除解压路径文件夹
                 FileUtils.delFolder(extractFilePath+filenames[0]);
-            }
-
-            //矢量数据删除数据库表
-            if(tableNames.getFlag()==0){
-                b = BaseGeoserverREST.publisher.removeLayer(tableNames.getWorkspace(), tableNames.getNameEn());
-                System.out.println("删除矢量:"+tableNames.getNameEn()+","+b);
-                if(b){
-                    tableNamesService.delete(tableNames.getId());
-                    tableNamesService.dropTable(tableNames.getNameEn());
-                }else{
-                    return ReturnFormat.retParam(2033,tableNames.getNameCn());
-                }
-
-            }else{
-                b = BaseGeoserverREST.publisher.removeCoverageStore(tableNames.getWorkspace(), tableNames.getDatastore(),true);
-                System.out.println("删除栅格:"+tableNames.getNameEn()+","+b);
-                if(b){
-                    tableNamesService.delete(tableNames.getId());
-                }else{
-                    return ReturnFormat.retParam(2033,tableNames.getNameCn());
-                }
             }
         }
         return ReturnFormat.retParam(0,null);
