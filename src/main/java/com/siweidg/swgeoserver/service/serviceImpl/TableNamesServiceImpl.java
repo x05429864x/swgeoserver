@@ -8,6 +8,7 @@ import com.siweidg.swgeoserver.comm.utils.PageRequest;
 import com.siweidg.swgeoserver.comm.utils.PageResult;
 import com.siweidg.swgeoserver.comm.utils.PageUtils;
 import com.siweidg.swgeoserver.dao.TableNamesMapper;
+import com.siweidg.swgeoserver.dao.WorkspaceTypeMapper;
 import com.siweidg.swgeoserver.entry.TableNames;
 import com.siweidg.swgeoserver.service.TableNamesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -23,6 +25,9 @@ public class TableNamesServiceImpl extends BaseGeoserverREST implements TableNam
 
     @Autowired
     TableNamesMapper tableNamesMapper;
+
+    @Autowired
+    WorkspaceTypeMapper workspaceTypeMapper;
 
     @Override
     public List<TableNames> findTableNames(Map<String ,Object> paramMap) {
@@ -46,6 +51,7 @@ public class TableNamesServiceImpl extends BaseGeoserverREST implements TableNam
         String sort = "t.id";
         PageHelper.startPage(pageNum, pageSize,sort +" "+orderBy);
         List<TableNames> tableNames = tableNamesMapper.findTableNames(pageRequest.getParams());
+//        tableNames.stream().collect(Collectors.toList());
         return new PageInfo<TableNames>(tableNames);
     }
 
