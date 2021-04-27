@@ -50,7 +50,7 @@
 		select * from <include refid="table"/>
 		<if test="_parameter != null">
 			<where>
-				name_cn = '${nameCn}' or name_en = '${nameEn}'
+				name_cn = '#{nameCn}' or name_en = '#{nameEn}'
 			</where>
 		</if>
 		order by id
@@ -107,12 +107,12 @@
 	</update>
 
 	<!-- 删除 -->
-	<delete id="delete" parameterType="Long">
+	<delete id="delete" parameterType="java.lang.Long">
 		delete from <include refid="table"/> where id = #{id}
 	</delete>
 
 	<!-- 删除数据库中表-->
-	<update id="dropTable" parameterType="String">
+	<update id="dropTable" parameterType="java.lang.String">
 		<if test="_parameter != null">
 			drop table ${names}
 		</if>
@@ -120,20 +120,24 @@
 
 	<select id="findTableNames" resultMap="TableNamesMap">
 		select t.id,t.name_cn,t.name_en,t.workspace,t.state,t.creater,t.create_time,t.updater,t.update_time,t.remark,t.flag,t.datastore,t.metadata
-		,s.id styleId,s.name_cn styleNameCn,s.name_en styleNameEn from tablenames t left join sys_style s on t.style_id = s.id where 1=1
+		,s.id styleId,s.name_cn styleNameCn,s.name_en styleNameEn from tablenames t left join sys_style s on t.style_id = s.id
+		<where>
 			<if test="state != null">
 				<foreach collection="state" item="state" open="AND (" close=")" separator="or" >
 					t.state = #{state}
 				</foreach>
 			</if>
-			<if test="nameCn != null">
-				AND t.name_cn = #{nameCn}
+			<if test="nameCn !=null and nameCn !=''">
+				AND t.name_cn like CONCAT('%',#{nameCn},'%')
+			</if><if test="workspace != null and workspace !=''" >
+				AND t.workspace = #{workspace}
 			</if>
+		</where>
 		order by t.id
 	</select>
 
-	<select id="getExtent"  parameterType="Long" resultType="String">
-		SELECT ST_Extent(the_geom) from workdata_base where task_id = ${taskId}
+	<select id="getExtent"  parameterType="integer" resultType="java.lang.String">
+		SELECT ST_Extent(the_geom) from workdata_base where task_id = #{taskId}
 	</select>
 
 	<!-- 作废

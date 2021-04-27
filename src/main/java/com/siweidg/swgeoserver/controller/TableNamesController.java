@@ -378,7 +378,7 @@ public class TableNamesController extends BaseController {
             "  \"pageSize\": 20,\n" +
             "  \"order\": \"desc\",\n" +
             "  \"sort\":\"id\",\n" +
-            "  \"params\":{\"state\":  -1不可用;0已上传未发布;1已发布可用,\"nameCn\": 图层名称}\n" +
+            "  \"params\":{\"state\":  -1不可用;0已上传未发布;1已发布可用,\"nameCn\": 图层名称,\"workspace\": 工作区名称}\n" +
             "}",required = true)@RequestBody PageRequest pageQuery) {
         return ReturnFormat.retParam(0,tableNamesService.findPage(pageQuery));
     }

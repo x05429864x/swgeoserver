@@ -48,7 +48,7 @@ public class TableNamesServiceImpl extends BaseGeoserverREST implements TableNam
         int pageNum = pageRequest.getPageNum();
         int pageSize = pageRequest.getPageSize();
         String orderBy = pageRequest.getOrder();
-        String sort = "t.id";
+        String sort = pageRequest.getSort();
         PageHelper.startPage(pageNum, pageSize,sort +" "+orderBy);
         List<TableNames> tableNames = tableNamesMapper.findTableNames(pageRequest.getParams());
 //        tableNames.stream().collect(Collectors.toList());
