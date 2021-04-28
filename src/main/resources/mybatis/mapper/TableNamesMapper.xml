@@ -50,7 +50,7 @@
 		select * from <include refid="table"/>
 		<if test="_parameter != null">
 			<where>
-				name_cn = '#{nameCn}' or name_en = '#{nameEn}'
+				name_cn = '${nameCn}' or name_en = '${nameEn}'
 			</where>
 		</if>
 		order by id
